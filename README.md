@@ -1,4 +1,4 @@
-# Forest Carbon Lite V.8 - Unified Structure
+# Forest Carbon Lite V.1.0 - Unified Structure
 
 A comprehensive Python implementation of a "FullCAM-lite" forest carbon accounting model, featuring the Tree Yield Formula (TYF) growth engine with dynamic scenario generation and climate change integration.
 
@@ -45,7 +45,7 @@ forest-carbon-lite/
 ├── data_matrix_generator.py        # Data-driven matrix generator
 ├── configs/                        # Configuration files
 │   ├── base/                       # Base configurations
-│   │   ├── management_*.yaml       # Management configs (i, ir, m, mr, l, lr, afm_m)
+│   │   ├── management_*.yaml       # Management configs (i, ir, m, mr, l, afm_m)
 │   │   ├── climate_*.yaml          # Climate configs (current, paris, plus2, plus3)
 │   │   └── site_*.yaml             # Site configs (EOF, EOFD, ETOF, ETOFD)
 │   └── generated/                  # Generated scenario configs
@@ -79,6 +79,29 @@ For ease of use, configuration files now use shortened, intuitive names:
 - **`ETOF`** - Eucalypt Tall Open Forest
 - **`ETOFD`** - Eucalypt Tall Open Forest Degraded
 
+## 📋 Available Configurations
+
+### Forest Types
+- **AFW**: Acacia Forest Woodland
+- **EOF**: Eucalypt Open Forest  
+- **EOFD**: Eucalypt Open Forest Degraded
+- **ETOF**: Eucalypt Tall Open Forest
+- **ETOFD**: Eucalypt Tall Open Forest Degraded
+
+### Climate Scenarios
+- **current**: Current climate conditions
+- **paris**: Paris Agreement pathway (1.5°C)
+- **plus2**: +2°C warming scenario
+- **plus3**: +3°C warming scenario
+
+### Management Levels
+- **l**: Low management (minimal intervention)
+- **m**: Moderate management (standard practices)
+- **i**: Intensive management (high intervention)
+- **ir**: Intensive management with reforestation
+- **mr**: Moderate management with reforestation
+- **afm_m**: Adaptive Forest Management (moderate)
+
 ## 🚀 Quick Start
 
 ### 1. Single Simulation
@@ -94,8 +117,8 @@ python main.py simulate --forest ETOF --years 25 --plot --uncertainty --seed 42
 python main.py simulate --forest ETOF --years 25 --seed 123
 python main.py simulate --forest ETOF --years 25 --seed 123  # Identical results
 
-# Custom configuration with seed
-python main.py simulate --forest EOF --years 30 --config custom_config.yaml --climate paris_target --seed 456
+# With climate configuration
+python main.py simulate --forest EOF --years 30 --climate paris --seed 456
 ```
 
 ### 2. Scenario Analysis
@@ -105,7 +128,7 @@ python main.py simulate --forest EOF --years 30 --config custom_config.yaml --cl
 python main.py analyze --forest-types ETOF,EOFD --climates current,paris --years 25 --seed 42
 
 # With custom parameters and uncertainty analysis
-python main.py analyze --forest-types ETOF --climates current,plus2 --managements baseline,adaptive,intensive --workers 8 --plots --uncertainty --seed 123
+python main.py analyze --forest-types ETOF --climates current,plus2 --managements l,m,i --workers 8 --plots --uncertainty --seed 123
 
 # With managed reforestation and reproducibility
 python main.py analyze --forest-types ETOF --climates current --managements ir --years 25 --seed 456
@@ -118,17 +141,17 @@ python main.py analyze --forest-types ETOF --climates current --managements i,ir
 
 ```bash
 # Run AFM vs Degrading analysis (no reforestation scenario)
-python custom_afm_simulator.py --forest-type ETOF --management intensive --years 52
+python custom_afm_simulator.py --forest-type ETOF --management i --years 52
 
 # Different forest types and management levels
-python custom_afm_simulator.py --forest-type AFW --management adaptive --years 25
-python custom_afm_simulator.py --forest-type EOF --management moderate --years 30
+python custom_afm_simulator.py --forest-type AFW --management m --years 25
+python custom_afm_simulator.py --forest-type EOF --management l --years 30
 
 # Custom output directory
-python custom_afm_simulator.py --forest-type ETOF --management intensive --years 52 --output-dir my_afm_analysis
+python custom_afm_simulator.py --forest-type ETOF --management i --years 52 --output-dir my_afm_analysis
 
 # Skip plot generation for faster execution
-python custom_afm_simulator.py --forest-type ETOF --management intensive --years 52 --no-plots
+python custom_afm_simulator.py --forest-type ETOF --management i --years 52 --no-plots
 ```
 
 **What this does:**
@@ -566,7 +589,7 @@ python main.py analyze --forest-types ETOF --climates current --years 5
 python main.py comprehensive --results-path output/batch_results.csv
 
 # Test AFM vs Degrading analysis
-python custom_afm_simulator.py --forest-type ETOF --management intensive --years 5
+python custom_afm_simulator.py --forest-type ETOF --management i --years 5
 ```
 
 ### Adding New Forest Types
