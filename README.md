@@ -600,11 +600,11 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🙏 Acknowledgments
 
-- **Healthy Forests Foundation**: Project sponsor
+- **Healthy Forests Foundation**
 - **FullCAM**: Australian Government forest carbon model
 - **Tree Yield Formula**: Scientific foundation
 - **Climate Science**: IPCC scenarios and data
 
 ---
 
-**Forest Carbon Lite V.8** - Unified, scalable, and comprehensive forest carbon modeling.
+**Forest Carbon Lite V.1.0** - Unified, scalable, and comprehensive forest carbon modeling.
