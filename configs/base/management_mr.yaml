@@ -1,0 +1,33 @@
+# Moderate Management with Managed Reforestation
+# Maximum intervention including managed reforestation scenarios
+
+name: "moderate_reforestation"
+description: "Intensive management with managed reforestation - Maximum intervention including reforestation"
+display_name: "Intensive Management (Managed Reforestation)"
+
+# Management effects on forest parameters
+effects:
+  y_multiplier: 1.35            # 50% growth improvement
+  mortality_factor: 0.65        # 50% mortality reduction
+  disturbance_factor: 0.5      # 50% disturbance reduction
+  prescribed_burn_effect: 0.15  # 20% biomass consumption from frequent burns
+  apply_to_reforestation: true # Enable management effects for reforestation scenarios
+
+# Management practices
+practices:
+  prescribed_burning: "Very frequent (3 year intervals)"
+  thinning: "Intensive for maximum growth"
+  species_mixing: "Climate-adapted species with genetic diversity"
+  pest_control: "Integrated pest management with monitoring"
+  fire_management: "Advanced fuel management and fire breaks"
+  climate_adaptation: "Species selection and assisted migration"
+  carbon_monitoring: "Continuous carbon stock monitoring"
+  reforestation_management: "Active management of reforestation areas"
+  
+# Research references
+references:
+  - "Fernandes & Botelho (2003) - Intensive prescribed fire effects"
+  - "Stephens et al. (2012) - Advanced fire management"
+  - "Lindenmayer et al. (2018) - Intensive management outcomes"
+  - "Prober et al. (2019) - Climate-adaptive forest management"
+  - "Chazdon et al. (2016) - Managed reforestation approaches"

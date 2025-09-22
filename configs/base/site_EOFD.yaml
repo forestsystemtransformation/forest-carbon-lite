@@ -1,0 +1,123 @@
+# Eucalypt Open Forest (EOF) - FullCAM Calibrated Parameters
+# Based on Paul KI and Roxburgh SH (2025) Carbon sequestration in woody biomass of mulga (Acacia aneura) woodlands: confidence in prediction using the carbon accounting model FullCAM. The Rangeland Journal 47, RJ24027. doi:10.1071/RJ24027
+# ~2,438 AGB plots, 300-year spin-ups, 1.825% annual mortality
+
+# Forest type parameters
+K_AGB: 160.0  # Maximum potential biomass (tonnes/ha)
+G: 10.196      # Age of maximum growth rate (from FullCAM tyf_G)
+root_shoot: 0.25  # Root-to-shoot ratio
+
+# NEUTRAL FPI (scenario builder will modify)
+fpi_ratios:
+  baseline: 1.00      # Builder will apply degradation
+  management: 1.00    # Builder will apply climate
+  reforestation: 1.00 # Builder will apply climate
+
+# Initial soil carbon fractions (based on FullCAM soil organic C ~ 55.5 Mg C ha-1)
+S0_deg_frac: 0.1   # Initial soil carbon for EOF
+S0_man_frac: 0.1   # Same for management
+S0_new_frac: 0.01   # Reforestation starts with minimal soil carbon
+
+# Initial ages (used for growth calculations, not initial biomass)
+age_degraded: 5
+age_managed: 5
+age_reforestation: 0
+
+# FIXED INITIAL BIOMASS VALUES (tonnes/ha) - based on FullCAM typical stocks
+# Above-ground biomass ~ 96.7 Mg C ha-1 = ~96.7 tonnes/ha (assuming 50% carbon content)
+initial_biomass_baseline: 37.0     # Typical EOF AGB from FullCAM
+initial_biomass_management: 37.0   # Same starting biomass for management
+initial_biomass_reforestation: 0.0 # Reforestation starts from zero
+
+# Mortality rates (based on FullCAM 1.825% annual mortality)
+# Note: Management effects are applied by scenario builder to avoid double-counting
+m_baseline: 0.018       # EOF baseline mortality (medium productivity forest)
+
+# BASE disturbance (scenario builder modifies)
+pdist_degraded: 0.10
+pdist_managed: 0.10    # Same as degraded - builder applies reduction
+pdist_reforestation: 0.10
+
+dsev_degraded: 0.20
+dsev_managed: 0.20     # Same as degraded - builder applies reduction
+dsev_reforestation: 0.20
+
+# NEUTRAL TYF calibrations (builder applies management effects)
+# NEUTRAL TYF
+tyf_calibrations:
+  baseline:
+    M: 160.0      # Maximum potential biomass
+    G: 10.196     # FullCAM calibrated age of max growth
+    y: 1.0        # Builder applies management
+  management:
+    M: 160.0      # Same maximum potential
+    G: 10.196     
+    y: 1.0        # Builder applies management
+  reforestation:
+    M: 160.0     # Same maximum potential
+    G: 10.196   
+    y: 1.0       # Builder applies management
+
+# FullCAM-derived parameters (for reference and future model enhancement)
+fullcam_parameters:
+  # Growth & canopy
+  tyf_G: 10.196                   # Age of max AGB increment (very rapid early growth)
+  frFracInit: 0.900              # Initial forest percent/canopy cover
+  
+  # Standing dead -> debris turnover
+  bkdnFracSDdwdF: 5              # Time constant for standing dead -> downed wood
+  atmsFracSDdwdBkdnF: 0.102      # Respiration fraction when standing dead turns to debris
+  
+  # Standing coarse wood turnover
+  bkdnFracSChwdF: 5              # Standing coarse wood -> debris
+  atmsFracSChwdBkdnF: 0.106      # Respiration during turnover
+  
+  # Standing bark & leaves turnover
+  bkdnFracSBlitF: 1              # Standing bark -> debris
+  atmsFracSBlitBkdnF: 0.800      # Respiration during turnover
+  bkdnFracSLlitF: 1              # Standing leaves -> debris
+  atmsFracSLlitBkdnF: 0.400      # Respiration during turnover
+  
+  # Roots & soil pathways
+  bkdnFracRCodrF: 3.869          # Coarse root debris -> soil
+  rFracFirtF: 0.431              # Soil fraction parameter
+  
+  # Respiration fractions (debris -> soil)
+  atmsFracRDdwdBkdnF: 0.950      # Stem/branch debris
+  atmsFracRBlitBkdnF: 0.937      # Bark debris
+  atmsFracDLlitBkdnF: 0.892      # Decomposable foliage
+  atmsFracRLlitBkdnF: 0.947      # Resistant foliage
+  atmsFracRCodrBkdnF: 0.950      # Coarse root debris
+
+# Typical EOF carbon stocks (from FullCAM calibration dataset)
+typical_carbon_stocks:
+  above_ground_biomass: 96.7     # Mg C ha-1
+  standing_dead: 20.6            # Mg C ha-1
+  coarse_woody_debris: 18.8      # Mg C ha-1
+  total_woody_debris: 20.0       # Mg C ha-1
+  bark_debris: 0.7               # Mg C ha-1
+  foliage_debris: 2.8            # Mg C ha-1
+  soil_organic_carbon: 55.5      # Mg C ha-1 (0-30 cm)
+  rpm: 6.7                       # Mg C ha-1 (Resistant Plant Material)
+  hum: 11.0                      # Mg C ha-1 (Humus)
+
+# Model performance metrics (from FullCAM calibration)
+model_performance:
+  agb_bias: -8.7                 # Mg C ha-1 (~ -9%)
+  rmse: 79.6                     # Mg C ha-1
+  lins_concordance: 0.19         # (0.25 on 0.25-power transform)
+  data_coverage:
+    agb_plots: 2438              # Above-ground biomass observations
+    standing_dead_plots: 190     # Standing dead observations
+    cwd_plots: 406               # Coarse woody debris observations
+    litter_plots: 1015           # Litter observations
+    soc_plots: 137               # Soil organic carbon observations
+    rpm_hum_plots: 8             # RPM/HUM observations each
+
+# Disturbance history coverage (from calibration dataset)
+disturbance_coverage:
+  prescribed_fire: 143           # Prescribed fire events
+  moderate_wildfire: 248         # Moderate wildfire events
+  stand_replacing_wildfire: 273  # Stand-replacing wildfire events
+  clearfell: 57                  # Clearfell events
+  thinning: 179                  # Thinning events

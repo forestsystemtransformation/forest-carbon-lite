@@ -1,0 +1,39 @@
+# Paris Agreement +3°C Climate Scenario
+# CATASTROPHIC THRESHOLD: Widespread forest collapse - transition to carbon source
+
+name: "plus3"
+description: "3°C warming scenario - CATASTROPHIC: Widespread forest die-off and transition from carbon sink to major carbon source"
+display_name: "Catastrophic 3°C Warming"
+
+# Climate effects on forest parameters
+effects:
+  fpi_adjustment: 0.65         # 35% reduction (severe decline in forest productivity)
+  temp_change: 3.0             # Additional 3°C warming
+  rainfall_change: -0.20       # 20% rainfall reduction
+  mortality_adjustment: 1.60   # 60% mortality increase (mass die-offs)
+  disturbance_adjustment: 1.75 # 75% disturbance increase (extreme fires/storms)
+
+# Climate metadata
+metadata:
+  temperature_target: "3°C above pre-industrial"
+  rainfall_change: "20% reduction with extreme variability"
+  fire_risk: "75% increase - catastrophic fire seasons"
+  drought_frequency: "Severe multi-year droughts become common"
+  heatwave_intensity: "Extreme - many areas exceed physiological limits"
+  forest_status: "Transition from carbon sink to carbon source"
+  
+# Additional extreme impacts
+extreme_impacts:
+  ecosystem_collapse: "Widespread forest die-back"
+  species_extinction: "Mass local extinctions"
+  carbon_release: "Forests become net carbon emitters"
+  tipping_points: "Multiple ecosystem tipping points crossed"
+  adaptation_limits: "Many species exceed adaptation capacity"
+
+# Research references
+references:
+  - "IPCC AR6 (2021) - Risks at 3°C warming"
+  - "Steffen et al. (2018) - Tipping cascades in Earth System"
+  - "McDowell et al. (2022) - Global forest mortality under extreme warming"
+  - "Anderegg et al. (2020) - Climate-driven risks to forest carbon sink"
+  - "Reichstein et al. (2013) - Climate extremes and terrestrial carbon cycle"
