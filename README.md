@@ -1,10 +1,6 @@
-# Forest Carbon Lite V.1.0 - Unified Structure
+# Forest Carbon Lite V.1.0
 
 A comprehensive Python implementation of a "FullCAM-lite" forest carbon accounting model, featuring the Tree Yield Formula (TYF) growth engine with dynamic scenario generation and climate change integration.
-
-## 🏗️ New Unified Structure
-
-The project has been reorganized into a clean, unified package structure with simplified configuration names:
 
 ```
 forest-carbon-lite/
