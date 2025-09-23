@@ -1,0 +1,39 @@
+# Example piecewise climate configuration
+# This demonstrates threshold-based climate response instead of linear scaling
+
+name: "piecewise_threshold"
+description: "Threshold-based climate response with step changes at critical temperatures"
+
+# Climate parameters
+temperature_increase: 2.0  # degrees C
+rainfall_reduction: 50     # mm
+
+# FPI profile configuration
+fpi_profile: "piecewise"  # Use threshold-based adjustment instead of linear
+
+# Piecewise threshold configuration
+piecewise:
+  - {temp: 1.0, fpi: 0.95}   # 1.0°C: 5% productivity loss
+  - {temp: 1.5, fpi: 0.90}   # 1.5°C: 10% productivity loss (critical threshold)
+  - {temp: 2.0, fpi: 0.82}   # 2.0°C: 18% productivity loss
+  - {temp: 2.5, fpi: 0.70}   # 2.5°C: 30% productivity loss
+  - {temp: 3.0, fpi: 0.65}   # 3.0°C: 35% productivity loss
+
+# Other climate adjustments (still linear)
+mortality_temperature_factor: 0.012  # per degree C
+mortality_rainfall_factor: 0.008     # per 100mm reduction
+disturbance_probability_temperature_factor: 0.03
+disturbance_probability_rainfall_factor: 0.02
+disturbance_severity_temperature_factor: 0.02
+disturbance_severity_rainfall_factor: 0.012
+
+# Parameter bounds
+parameter_bounds:
+  fpi_min: 0.40
+  fpi_max: 1.20
+  mortality_min: 0.005
+  mortality_max: 0.080
+  pdist_min: 0.01
+  pdist_max: 0.25
+  dsev_min: 0.02
+  dsev_max: 0.35

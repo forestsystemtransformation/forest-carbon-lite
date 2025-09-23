@@ -1,0 +1,31 @@
+# AFM Only Management Scenario
+# Active Forest Management vs Degrading Baseline (No Reforestation)
+
+name: "afm_only"
+description: "AFM vs Degrading - Active Forest Management without reforestation"
+display_name: "AFM Only (No Reforestation)"
+
+# Management effects on forest parameters
+effects:
+  y_multiplier: 1.35           # 35% growth improvement (same as adaptive)
+  mortality_factor: 0.65       # 35% mortality reduction
+  disturbance_factor: 0.5      # 50% disturbance reduction
+  prescribed_burn_effect: 0.15 # 15% biomass consumption from frequent burns
+  disable_reforestation: true  # Custom flag to disable reforestation scenario
+
+# Management practices
+practices:
+  prescribed_burning: "Frequent (5 year intervals)"
+  thinning: "Intensive for resilience"
+  species_mixing: "Climate-adapted species"
+  pest_control: "Integrated pest management"
+  fire_management: "Advanced fuel management"
+  climate_adaptation: "Species selection for future climate"
+  reforestation: "Disabled - AFM only"
+  
+# Research references
+references:
+  - "Fernandes & Botelho (2003) - Frequent prescribed fire effects"
+  - "Stephens et al. (2012) - Advanced fire management"
+  - "Lindenmayer et al. (2018) - Adaptive management outcomes"
+  - "Prober et al. (2019) - Climate-adaptive forest management"

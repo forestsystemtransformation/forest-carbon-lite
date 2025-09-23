@@ -1,0 +1,102 @@
+# Eucalypt Tall Open Forest (ETOF) - FullCAM Calibrated Parameters
+# Based on Paul KI and Roxburgh SH (2025) Carbon sequestration in woody biomass of mulga (Acacia aneura) woodlands: confidence in prediction using the carbon accounting model FullCAM. The Rangeland Journal 47, RJ24027. doi:10.1071/RJ24027
+# ~9,300 field plots, 300-year spin-ups, 1.825% annual mortality
+
+# Forest type parameters
+K_AGB: 300.0  # Maximum potential biomass (tonnes/ha) - conservative estimate above observed mean
+G: 11.254      # Age of maximum growth rate (from FullCAM tyf_G)
+root_shoot: 0.25  # Root-to-shoot ratio
+
+# NEUTRAL FPI (scenario builder will modify)
+fpi_ratios:
+  baseline: 1.00      # Builder will apply degradation
+  management: 1.00    # Builder will apply climate
+  reforestation: 1.00 # Builder will apply climate
+
+# Initial soil carbon fractions (based on FullCAM soil organic C ~ 101.6 Mg C ha-1)
+S0_deg_frac: 0.4   # Higher initial soil carbon for ETOF
+S0_man_frac: 0.4   # Same for management
+S0_new_frac: 0.01  # Reforestation starts with minimal soil carbon
+
+# Initial ages (used for growth calculations, not initial biomass)
+age_degraded: 15
+age_managed: 15
+age_reforestation: 0
+
+# FIXED INITIAL BIOMASS VALUES (tonnes/ha) - based on FullCAM typical stocks
+# Above-ground biomass ~ 141.8 Mg C ha-1 = ~284 tonnes/ha (assuming 50% carbon content)
+initial_biomass_baseline: 284.0    # Typical ETOF AGB from FullCAM (corrected units)
+initial_biomass_management: 284.0  # Same starting biomass for management
+initial_biomass_reforestation: 10.0  # Reforestation starts from zero
+
+# Mortality rates (based on FullCAM 1.825% annual mortality)
+# Note: Management effects are applied by scenario builder to avoid double-counting
+m_degraded: 0.015        # ETOF degraded mortality (mature forest, lower mortality)
+m_managed: 0.015         # ETOF managed mortality (same as degraded for now)
+m_reforestation: 0.015   # ETOF reforestation mortality (same as degraded for now)
+
+# BASE disturbance (scenario builder modifies)
+pdist_degraded: 0.10
+pdist_managed: 0.10    # Same as degraded - builder applies reduction
+pdist_reforestation: 0.10
+
+dsev_degraded: 0.20
+dsev_managed: 0.20     # Same as degraded - builder applies reduction
+dsev_reforestation: 0.20
+
+# NEUTRAL TYF calibrations (builder applies management effects)
+# NEUTRAL TYF
+tyf_calibrations:
+  baseline:
+    M: 300.0       # Maximum potential biomass 
+    G: 11.254          
+    y: 1           # Builder applies management
+  management:
+    M: 300.0      # Same maximum potential
+    G: 11.254         
+    y: 1          # Builder applies management
+  reforestation:
+    M: 300.0      # Same maximum potential
+    G: 11.254         
+    y: 1.0        # Builder applies management
+
+# FullCAM-derived parameters (for reference and future model enhancement)
+fullcam_parameters:
+  # Growth & canopy
+  tyf_G: 11.254                    # Age of max AGB increment
+  frFracInit: 0.828               # Initial forest percent/canopy cover
+  
+  # Standing dead -> debris turnover
+  bkdnFracSDdwdF: 5               # Time constant for standing dead -> downed wood
+  atmsFracSDdwdBkdnF: 0.104       # Respiration fraction when standing dead turns to debris
+  
+  # Standing coarse wood turnover
+  bkdnFracSChwdF: 3.77            # Standing coarse wood -> debris
+  atmsFracSChwdBkdnF: 0.172       # Respiration during turnover
+  
+  # Standing bark & leaves turnover
+  bkdnFracSBlitF: 1               # Standing bark -> debris
+  atmsFracSBlitBkdnF: 0.773       # Respiration during turnover
+  bkdnFracSLlitF: 1               # Standing leaves -> debris
+  atmsFracSLlitBkdnF: 0.106       # Respiration during turnover
+  
+  # Roots & soil pathways
+  bkdnFracRCodrF: 2.835           # Coarse root debris -> soil
+  rFracFirtF: 0.636               # Soil fraction parameter
+  
+  # Respiration fractions (debris -> soil)
+  atmsFracRDdwdBkdnF: 0.84        # Stem/branch debris
+  atmsFracRBlitBkdnF: 0.769       # Bark debris
+  atmsFracDLlitBkdnF: 0.697       # Decomposable foliage
+  atmsFracRLlitBkdnF: 0.867       # Resistant foliage
+  atmsFracRCodrBkdnF: 0.834       # Coarse root debris
+
+# Typical ETOF carbon stocks (from FullCAM calibration dataset)
+typical_carbon_stocks:
+  above_ground_biomass: 141.8     # Mg C ha-1
+  standing_dead: 58.6             # Mg C ha-1
+  coarse_woody_debris: 25.6       # Mg C ha-1
+  total_woody_debris: 26.8        # Mg C ha-1
+  bark_debris: 0.8                # Mg C ha-1
+  foliage_debris: 3.3             # Mg C ha-1
+  soil_organic_carbon: 101.6      # Mg C ha-1 (0-30 cm)

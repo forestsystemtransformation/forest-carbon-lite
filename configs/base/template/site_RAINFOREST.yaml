@@ -1,0 +1,62 @@
+# Rainforest Configuration
+# High biomass, high diversity tropical/subtropical forest
+
+# Forest characteristics
+K_AGB: 120.0          # Maximum potential AGB (tC/ha) - very high for rainforest
+G: 15.0               # Age of maximum growth rate (years)
+root_shoot: 0.25      # Root to shoot ratio
+tyf_G: 15.0           # TYF growth parameter
+
+# Initial biomass (tC/ha)
+initial_biomass_baseline: 80.0    # High initial biomass
+initial_biomass_management: 85.0  # Slightly higher with management
+initial_biomass_reforestation: 5.0 # Low for new plantings
+
+# Mortality rates (annual)
+m_baseline: 0.02      # Low natural mortality
+m_managed: 0.015      # Even lower with management
+m_reforestation: 0.025 # Higher for young trees
+
+# Disturbance parameters
+pdist_degraded: 0.05   # Low disturbance probability
+pdist_managed: 0.05    # Same as degraded - builder applies reduction
+pdist_reforestation: 0.05
+
+dsev_degraded: 0.15    # Low disturbance severity
+dsev_managed: 0.15     # Same as degraded - builder applies reduction
+dsev_reforestation: 0.15
+
+# NEUTRAL FPI (scenario builder will modify)
+fpi_ratios:
+  baseline: 1.00      # Builder will apply degradation
+  management: 1.00    # Builder will apply climate
+  reforestation: 1.00 # Builder will apply climate
+
+# NEUTRAL TYF calibrations (builder applies management effects)
+tyf_calibrations:
+  baseline:
+    M: 120.0
+    G: 15.0
+    y: 1.0 # Builder applies management
+  management:
+    M: 120.0
+    G: 15.0
+    y: 1.0        # Builder applies management
+  reforestation:
+    M: 120.0
+    G: 15.0
+    y: 1.0 # Builder applies management
+
+# FullCAM parameters
+fullcam_parameters:
+  tyf_G: 15.0
+  tyf_M: K_AGB
+  tyf_y: 1.0
+
+# Typical carbon stocks (tC/ha)
+typical_carbon_stocks:
+  above_ground_biomass: "80-120"
+  below_ground_biomass: "20-30"
+  dead_wood: "15-25"
+  litter: "8-12"
+  soil_organic_carbon: "120-180"

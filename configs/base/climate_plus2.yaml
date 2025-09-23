@@ -1,0 +1,30 @@
+# Paris Agreement 2.0°C Climate Scenario
+# Exceeds critical thresholds - approaching ecosystem collapse
+
+name: "plus2"
+description: "Exceeds 2°C - approaching ecosystem collapse thresholds"
+display_name: "Paris 2.0°C Overshoot"
+
+# Climate effects on forest parameters
+effects:
+  fpi_adjustment: 0.78         # 22% reduction (research: 25-35% for 2.5-3°C)
+  temp_change: 2.0             # Additional 2.0°C warming
+  rainfall_change: -0.20        # 20% rainfall reduction
+  mortality_adjustment: 1.65   # 65% mortality increase
+  disturbance_adjustment: 1.7  # 70% disturbance increase
+
+# Climate metadata
+metadata:
+  temperature_target: "2.0°C above pre-industrial"
+  rainfall_change: "20% reduction"
+  fire_risk: "70% increase"
+  drought_frequency: "Frequent and severe"
+  heatwave_intensity: "Extreme"
+  ecosystem_threshold: "Approaching collapse"
+  
+# Research references
+references:
+  - "IPCC AR6 (2021) - 2°C warming impacts on forests"
+  - "Allen et al. (2020) - Forest mortality at 2°C warming"
+  - "Bowman et al. (2019) - Fire risk at 2°C warming"
+  - "Williams et al. (2019) - Ecosystem collapse thresholds"
