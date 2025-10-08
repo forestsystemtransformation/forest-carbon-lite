@@ -361,16 +361,16 @@ python main.py simulate --forest EOF --years 30 --climate paris --seed 456
 
 ```bash
 # Run comprehensive scenario analysis
-python main.py analyze --forest-types ETOF,EOFD --climates current,paris --years 25 --seed 42
+python main.py analyze --forest-type ETOF,EOFD --climate current,paris --years 25 --seed 42
 
 # Custom parameter combinations
-python main.py analyze --forest-types ETOF --climates current,plus2 --managements l,m,i --workers 8 --plots --uncertainty --seed 123
+python main.py analyze --forest-type ETOF --climate current,plus2 --management l,m,i --workers 8 --plot --uncertainty --seed 123
 
 # With managed reforestation
-python main.py analyze --forest-types ETOF --climates current --managements ir --years 25 --seed 456
+python main.py analyze --forest-type ETOF --climate current --management ir --years 25 --seed 456
 
 # Compare natural vs managed reforestation
-python main.py analyze --forest-types ETOF --climates current --managements i,ir --years 25 --seed 789
+python main.py analyze --forest-type ETOF --climate current --management i,ir --years 25 --seed 789
 ```
 
 ### 3. AFM vs Degrading Analysis
@@ -627,12 +627,12 @@ practices:
 ```python
 from forest_carbon import ForestCarbonSimulator
 
-# Initialize simulator with forest type and climate scenario
+# Initialize simulator with forest type
 sim = ForestCarbonSimulator(
     forest_type='ETOF',  # Eucalypt Tall Open Forest
     years=25,
-    area_ha=1000.0,
-    climate_config='current'  # Current climate conditions
+    area_ha=1000.0
+    # Note: climate_config parameter has known issues in v0.1
 )
 
 # Run simulation with specific management level
