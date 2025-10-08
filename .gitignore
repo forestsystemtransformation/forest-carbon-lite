@@ -253,3 +253,8 @@ test_output/
 # LaTeX Workshop specific
 .vscode/settings.json
 
+# Internal reports and documentation (not for public repository)
+reports/
+internal_docs/
+private_analysis/
+
