@@ -1,109 +1,349 @@
-# Forest Carbon Lite V.1.0
+# Forest Carbon Lite v0.1 - Professional Review Draft
 
-A comprehensive Python implementation of a "FullCAM-lite" forest carbon accounting model, featuring the Tree Yield Formula (TYF) growth engine with dynamic scenario generation and climate change integration.
+A transparent Python implementation of forest carbon accounting for restoration and management decision support under climate change. Built on the validated FullCAM Tree Yield Formula (TYF) with integrated climate scenarios and economic analysis.
+
+**Version:** 0.1 (Professional Review Draft)  
+**Status:** Seeking validation partnerships and peer review feedback  
+**Institution:** Healthy Forests Foundation
+
+---
+
+## ⚠️ VALIDATION STATUS
+
+**Forest Carbon Lite v0.1 is a Professional Review Draft**
+
+This implementation uses validated components (FullCAM TYF validated against 9,300+ plots by Forrester et al., 2025) but **the integrated system lacks independent field validation**.
+
+### ✅ **Appropriate Use Cases:**
+- Preliminary site screening and prioritization
+- Scenario comparison (relative performance analysis)
+- Training and education on forest carbon dynamics
+- Identifying knowledge gaps and research priorities
+- Exploring climate-management trade-offs
+
+### ❌ **NOT Yet Appropriate For:**
+- Sole basis for investment decisions
+- Carbon credit project MRV (Monitoring, Reporting, Verification)
+- Regulatory compliance reporting
+- Definitive carbon forecasts without field verification
+
+### 🔬 **Validation Priority:**
+We are actively seeking validation partnerships to test FCL against 5-10 year monitoring data from existing restoration projects. This will establish confidence bounds and identify systematic biases requiring correction.
+
+**Critical Limitation:** Without field validation, FCL should be used for preliminary screening and scenario exploration only. Independent verification is essential before operational deployment for project planning and investment decisions.
+
+**Reference:** See Section 4.2 of the technical paper for complete validation status and requirements.
+
+---
+
+## 📋 Table of Contents
+
+- [Key Features](#-key-features)
+- [Scientific Foundation](#-scientific-foundation)
+- [Model Parameters](#-model-parameters)
+- [Quick Start](#-quick-start)
+- [Project Structure](#️-project-structure)
+- [Configuration System](#-configuration-system)
+- [Usage Examples](#-usage-examples)
+- [Output Structure](#-output-structure)
+- [Reproducibility](#-reproducibility)
+- [Advanced Features](#-advanced-features)
+- [Known Limitations](#-known-limitations)
+- [Contributing](#-contributing)
+
+---
+
+## 🎯 Key Features
+
+### Core Capabilities
+- **Validated Growth Engine**: FullCAM Tree Yield Formula (Forrester et al., 2025)
+- **Climate-Management Separation**: Orthogonal parameterization prevents double-counting
+- **Uncertainty Quantification**: Monte Carlo analysis with reproducible seeding
+- **Economic Analysis**: NPV, IRR, carbon credit revenue projections
+- **Visual Decision Support**: 12+ plot types for scenario comparison
+
+### Scientific Rigor
+- **Published Parameter Sets**: All defaults from peer-reviewed literature
+- **Transparent Assumptions**: Every parameter documented with source
+- **Reproducible Results**: Seeded RNG for experiment replication
+- **Comprehensive Documentation**: Technical paper with mathematical derivations
+
+### Model Innovation (Section 3 of technical paper)
+- **Orthogonal Climate-Management Effects**: Prevents double-counting (Algorithm 1)
+- **Active Forest Management (AFM) Framework**: Based on Bennett et al. (2024)
+- **Integrated Economic Analysis**: Aligned with carbon credit markets
+
+---
+
+## 🔬 Scientific Foundation
+
+### The FullCAM Tree Yield Formula
+
+FCL implements the FullCAM Tree Yield Formula (TYF) as validated by Forrester et al. (2025) against 9,300+ Australian forest plots.
+
+**Annual biomass increment:**
+
+```
+ΔAGBₜ = y × M × (e^(-k/t) - e^(-k/(t-1))) × FPIᵣₐₜᵢₒ
+```
+
+Where:
+- **ΔAGBₜ** = Annual increment in aboveground biomass (t/ha/yr)
+- **t** = Forest age (years)
+- **M** = Maximum aboveground biomass potential (t/ha) - *site-specific from Roxburgh et al. (2019)*
+- **G** = Age of maximum growth rate (years)
+- **k** = 2G - 1.25 (growth curve shape parameter, derived not calibrated)
+- **y** = Management multiplier (1.0 = baseline, >1.0 = enhanced)
+- **FPIᵣₐₜᵢₒ** = Climate productivity adjustment (FPI/FPIₐᵥₑ)
+
+**Key References:**
+- Forrester et al. (2025) - FullCAM calibration methodology
+- Paul & Roxburgh (2020) - Regeneration parameterization  
+- Paul & Roxburgh (2025) - Validation and domain of application
+- Waterworth et al. (2007) - Original TYF formulation
+- Roxburgh et al. (2019) - Maximum biomass spatial layer
+
+### Climate-Management Separation (Section 3.2-3.3)
+
+**Critical Innovation:** FCL implements strict orthogonal parameterization to avoid double-counting:
+
+```
+Growth = Base × (FPIₜ/FPIᵦₐₛₑₗᵢₙₑ) × y
+                 └──────┬──────┘   └┬┘
+                  Climate only    Mgmt only
+```
+
+This ensures:
+- Climate effects modify FPI ratios exclusively
+- Management effects modify y-multiplier exclusively  
+- Combined effects are multiplicative, not compounded
+
+**Reference:** Algorithm 1 in Section 3.3 of technical paper
+
+### Active Forest Management (AFM) - Section 3.4
+
+FCL's management scenarios can represent Active Forest Management (AFM) as defined by Bennett et al. (2024): temporary restoration interventions in degraded forests that work toward obsolescence.
+
+**AFM Principles:**
+- Management as ecosystem medicine, not perpetual manipulation
+- Interventions decrease as forests regain autonomous function
+- Focus on restoration, biodiversity, and carbon sequestration
+- Not commercial forestry operations
+
+**Current Limitation (v0.1):** Model applies constant management intensity throughout simulations, overestimating long-term costs. Temporal de-escalation (intensive → targeted → minimal over 25+ years) planned for v0.2.
+
+**Reference:** Bennett, L.T. et al. (2024) "Active Management: A Definition and Considerations for Implementation in Forests of Temperate Australia." Australian Forestry 87(3): 125-147.
+
+---
+
+## 📊 Model Parameters
+
+### Table 1: Forest Type Parameters (from Technical Paper Table 1)
+
+Default parameters for FCL v0.1 from published FullCAM calibrations:
+
+| Parameter | ETOF | EOF | AFW | Source |
+|-----------|------|-----|-----|--------|
+| **FullCAM TYF Growth Parameters** |
+| M - Max biomass (t/ha) | 290 | 170 | 49 | Roxburgh et al. (2019)* |
+| G - Age max growth (yr) | 12.53 | 12.53 | 12.53 | Paul & Roxburgh (2020, 2025) |
+| y - Management multiplier | 1.0-1.35 | 1.0-1.35 | 1.0-1.35 | See Table 2 |
+| k - Shape parameter | 23.81 | 23.81 | 23.81 | Derived: k = 2G - 1.25 |
+| **Ecosystem Process Parameters** |
+| Root:shoot ratio | 0.25 | 0.30 | 0.40 | Mokany et al. (2006) |
+| Mortality (%/yr) | 0.75 | 1.15 | 1.75 | FullCAM defaults |
+| Fire return interval (yr) | 35 | 20 | 15 | Historical records |
+| Carbon fraction | 0.47 | 0.47 | 0.47 | IPCC (2023) |
+
+**Forest Type Abbreviations:**
+- **ETOF** = Eucalypt Tall Open Forest
+- **EOF** = Eucalypt Open Forest  
+- **AFW** = Acacia Forest Woodland
+
+**Important Notes:**
+- *M values are site-specific - practitioners should obtain values from Roxburgh et al. (2019) spatial layer for their location
+- G = 12.53 years is calibrated for natural regeneration (Paul & Roxburgh 2020)
+- k is not independently calibrated but derived from G
+- Management multipliers (y) vary by intervention intensity (see Table 2)
+
+**Parameter Source Details:**
+- **M (Maximum biomass)**: ETOF and EOF from Roxburgh et al. (2019) spatial layer (national coverage); AFW from Paul & Roxburgh (2025) mulga calibration (2,438 plots)
+- **G (Age at max growth)**: Calibrated for natural regeneration across all forest types (Paul & Roxburgh 2020, 2025)
+- **y (Management multiplier)**: Baseline = 1.0 (no intervention). Enhanced values based on intensity levels in Table 2
+- **Root:shoot ratios**: From Mokany et al. (2006); ratios decrease with increasing precipitation
+- **Mortality rates**: FullCAM default values for forest types
+- **Fire return intervals**: Based on historical fire frequency records
+- **Carbon fraction**: IPCC default (IPCC 2023). Note: Australian eucalypts may range 0.45-0.49 (Ximenes & Wright 2006), introducing ±4% uncertainty
+
+### Table 2: Management Levels (from Technical Paper Table 2)
+
+| Code | Name | Applied to | y Multiplier | Description |
+|------|------|-----------|--------------|-------------|
+| `l` | Low Management | AFM in degraded forest | 1.10 | Minimal intervention |
+| `m` | Moderate Management | AFM in degraded forest | 1.20 | Standard practices |
+| `i` | Intensive Management | AFM in degraded forest | 1.35 | High intervention |
+| `mr` | Moderate Reforestation | Reforestation and AFM | 1.20 | Moderate management + planting |
+| `ir` | Intensive Reforestation | Reforestation and AFM | 1.35 | Intensive management + planting |
+
+**Management Effectiveness Sources:**
+- Cost ranges: Austin et al. (2020), Busch et al. (2024), Evans (2018)
+- Carbon uplift estimates: Paul et al. (2018), Paul & Roxburgh (2020)
+- Intervention cycles: Australian forest management guidelines
+
+### Table 3: Climate Scenarios (from Technical Paper Table 5)
+
+| Scenario | ΔT (°C) | ΔP (%) | FPI ratio | Fire interval | Mortality increase |
+|----------|---------|--------|-----------|---------------|-------------------|
+| `current` | 0 | 0 | 1.00 | 20 yr | 1.0× |
+| `paris` | +1.5 | -5 | 0.85 | 15 yr | 1.3× |
+| `plus2` | +2.0 | -10 | 0.80 | 12 yr | 1.5× |
+| `plus3` | +3.0 | -15 | 0.70 | 8 yr | 2.0× |
+
+**Climate Scenario Sources:**
+- Temperature scenarios: IPCC (2023) projections
+- FPI adjustments: Kesteven and Landsberg (2004) process-based model
+- Fire frequency changes: Boer et al. (2021), Furlaud et al. (2021), McColl-Gausden et al. (2022)
+- Mortality relationships: Wardlaw (2021) climate-fire analysis
+
+### Table 4: Economic Parameters (from Technical Paper Table 3)
+
+| Parameter | FCL Range (2024 AUD) | Literature Range | Source |
+|-----------|---------------------|------------------|--------|
+| Carbon price | $35-70/tCO₂e | $20-100/tCO₂e | Market data |
+| Establishment cost | $1,500-3,000/ha | $2,000-6,000/ha | Jonson & Freudenberger (2011), Austin et al. (2020), Pacheco et al. (2024) |
+| Management cost | $25-100/ha/yr | $150-250/ha/yr* | Conservative range; operational projects higher |
+| MRV cost | Not included | $15-40/ha/yr | Jonson & Freudenberger (2011), Verra VM0047 |
+| Discount rate | 5-7% real | 3-12% | Project finance standards |
+| Project period | 25-100 years | 25-100 years | Policy constraints |
+| Buffer pool | 5-25% | 10-30% | Conservative crediting |
+
+*FCL uses conservative lower bound for management costs
+
+**Economic Validation Sources:**
+- Austin et al. (2020) - Global forest mitigation costs
+- Busch et al. (2024) - Cost-effectiveness of natural regeneration
+- Evans (2018) - Australian carbon farming policy effectiveness
+- Jonson & Freudenberger (2011) - Australian woodland restoration costs
+- Pacheco et al. (2024) - Economics of carbon sequestration
+
+**MRV Cost Note:** Monitoring, Reporting, and Verification costs are NOT included in FCL economic projections. Users should budget $15-40/ha/yr depending on methodology:
+- $15/ha/yr: Low-intensity field monitoring (Jonson & Freudenberger 2011)
+- $30-40/ha/yr: Commercial carbon projects (Verra VM0047, Clean Energy Regulator standards)
+
+### Validation Benchmarks (Section 4.2.1)
+
+FCL's modeled sequestration rates align with published Australian data:
+- **8.5 tCO₂e/ha/yr**: Eucalypt woodland restoration (Jonson & Freudenberger 2011)
+- **12 tCO₂e/ha/yr**: Intensive mixed-species reforestation (Paul et al. 2018)
+- **4.5 tCO₂e/ha/yr**: Natural regeneration (Cook-Patton et al. 2020)
+
+These provide confidence bounds for FCL predictions across the spectrum from passive natural regeneration to intensive restoration management.
+
+---
+
+## 🗂️ Project Structure
 
 ```
 forest-carbon-lite/
 ├── forest_carbon/                    # Main package
-│   ├── __init__.py                  # Package initialization
+│   ├── __init__.py
 │   ├── core/                        # Core simulation engine
-│   │   ├── __init__.py
-│   │   ├── simulator.py            # Main simulator
-│   │   ├── uncertainty_analysis.py # Uncertainty analysis
-│   │   └── models/                 # All models
-│   │       ├── __init__.py
-│   │       ├── tyf_engine.py       # Tree Yield Formula engine
-│   │       ├── carbon_pools.py     # Carbon pool management
-│   │       ├── disturbance.py      # Disturbance modeling
-│   │       └── economics.py        # Economic modeling
+│   │   ├── simulator.py            # Main ForestCarbonSimulator
+│   │   ├── uncertainty_analysis.py # Monte Carlo analysis
+│   │   └── models/                 # Physical models
+│   │       ├── tyf_engine.py       # Tree Yield Formula
+│   │       ├── carbon_pools.py     # Carbon pool dynamics
+│   │       ├── disturbance.py      # Fire, drought, mortality
+│   │       └── economics.py        # NPV, IRR, carbon credits
 │   ├── scenarios/                   # Scenario management
-│   │   ├── __init__.py
-│   │   ├── builder.py              # Scenario configuration builder
-│   │   ├── runner.py               # Batch simulation runner
+│   │   ├── builder.py              # Scenario configuration
+│   │   ├── runner.py               # Batch execution
 │   │   ├── analyzer.py             # Scenario analysis
-│   │   └── manager.py              # Main scenario orchestrator
-│   ├── analysis/                    # Analysis and reporting
-│   │   ├── __init__.py
-│   │   └── comprehensive.py        # Comprehensive analysis system
-│   ├── utils/                       # Utilities and helpers
-│   │   ├── __init__.py
-│   │   ├── config_loader.py        # Configuration management
+│   │   └── manager.py              # Orchestrator
+│   ├── analysis/                    # Analysis & reporting
+│   │   └── comprehensive.py        # Comprehensive analysis
+│   ├── utils/                       # Utilities
+│   │   ├── config_loader.py        # YAML configuration
 │   │   ├── validation.py           # Input validation
-│   │   ├── colors.py               # Color management
+│   │   ├── colors.py               # Plotting colors
 │   │   ├── constants.py            # Physical constants
-│   │   └── climate_adjustments.py  # Climate adjustment functions
-│   └── visualization/               # Plotting and visualization
-│       ├── __init__.py
-│       └── plotter.py              # Main plotting system
-├── main.py                         # Unified entry point
-├── custom_afm_simulator.py         # AFM vs Degrading analysis tool
-├── plot_matrix_generator.py        # Plot comparison matrix generator
-├── data_matrix_generator.py        # Data-driven matrix generator
+│   │   └── climate_adjustments.py  # FPI calculations
+│   └── visualization/               # Plotting
+│       └── plotter.py              # Matplotlib visualization
+├── main.py                         # Unified CLI entry point
+├── custom_afm_simulator.py         # AFM vs Degrading tool
+├── plot_matrix_generator.py        # Plot comparison matrices
+├── data_matrix_generator.py        # Data-driven matrices
 ├── configs/                        # Configuration files
 │   ├── base/                       # Base configurations
-│   │   ├── management_*.yaml       # Management configs (i, ir, m, mr, l, afm_m)
-│   │   ├── climate_*.yaml          # Climate configs (current, paris, plus2, plus3)
-│   │   └── site_*.yaml             # Site configs (EOF, EOFD, ETOF, ETOFD)
-│   └── generated/                  # Generated scenario configs
-├── output/                         # Default output directory
-├── output_matrix/                  # Matrix comparison outputs
-└── requirements.txt                # Dependencies
+│   │   ├── management_*.yaml       # Management configs
+│   │   ├── climate_*.yaml          # Climate configs
+│   │   └── site_*.yaml             # Site/forest configs
+│   └── generated/                  # Auto-generated scenarios
+├── output/                         # Simulation outputs
+├── output_matrix/                  # Matrix comparisons
+└── requirements.txt                # Python dependencies
 ```
 
-## 📋 Simplified Configuration Names
+---
 
-For ease of use, configuration files now use shortened, intuitive names:
+## ⚙️ Configuration System
 
-### **Management Configs** (`management_*.yaml`)
-- **`i`** - Intensive AFM for Management
-- **`ir`** - Intensive AFM for Management and Reforestation  
-- **`m`** - Moderate AFM for Management
-- **`mr`** - Moderate AFM for Management and Reforestation
-- **`l`** - Light AFM for Management
-- **`lr`** - Light AFM for Management and Reforestation
-- **`afm_m`** - Moderate AFM Only (no reforestation)
+### Base Configuration Files
 
-### **Climate Configs** (`climate_*.yaml`)
-- **`current`** - No climate change (baseline)
-- **`paris`** - Paris target plus 1.5°C warming
-- **`plus2`** - Plus 2°C warming
-- **`plus3`** - Plus 3°C warming
+FCL uses YAML configuration files organized by category:
 
-### **Site Configs** (`site_*.yaml`)
-- **`EOF`** - Eucalypt Open Forest
-- **`EOFD`** - Eucalypt Open Forest Degraded
-- **`ETOF`** - Eucalypt Tall Open Forest
-- **`ETOFD`** - Eucalypt Tall Open Forest Degraded
+#### Site/Forest Configurations (`site_*.yaml`)
+- `site_ETOF.yaml` - Eucalypt Tall Open Forest
+- `site_EOFD.yaml` - Eucalypt Open Forest Degraded
+- `site_EOF.yaml` - Eucalypt Open Forest
+- `site_ETOFD.yaml` - Eucalypt Tall Open Forest Degraded
+- `site_AFW.yaml` - Acacia Forest Woodland
 
-## 📋 Available Configurations
+#### Climate Configurations (`climate_*.yaml`)
+- `climate_current.yaml` - No climate change (baseline)
+- `climate_paris.yaml` - Paris Agreement (+1.5°C)
+- `climate_plus2.yaml` - +2°C warming
+- `climate_plus3.yaml` - +3°C warming
 
-### Forest Types
-- **AFW**: Acacia Forest Woodland
-- **EOF**: Eucalypt Open Forest  
-- **EOFD**: Eucalypt Open Forest Degraded
-- **ETOF**: Eucalypt Tall Open Forest
-- **ETOFD**: Eucalypt Tall Open Forest Degraded
+#### Management Configurations (`management_*.yaml`)
+- `management_l.yaml` - Low management (minimal intervention)
+- `management_m.yaml` - Moderate management (standard practices)
+- `management_i.yaml` - Intensive management (high intervention)
+- `management_ir.yaml` - Intensive management + reforestation
+- `management_mr.yaml` - Moderate management + reforestation
 
-### Climate Scenarios
-- **current**: Current climate conditions
-- **paris**: Paris Agreement pathway (1.5°C)
-- **plus2**: +2°C warming scenario
-- **plus3**: +3°C warming scenario
+### Scenario Naming Convention
 
-### Management Levels
-- **l**: Low management (minimal intervention)
-- **m**: Moderate management (standard practices)
-- **i**: Intensive management (high intervention)
-- **ir**: Intensive management with reforestation
-- **mr**: Moderate management with reforestation
-- **afm_m**: Adaptive Forest Management (moderate)
+Scenarios are automatically named: `{SITE}_{CLIMATE}_{MANAGEMENT}`
+
+**Examples:**
+```
+ETOF_current_i      # ETOF + current climate + intensive management
+ETOF_paris_ir       # ETOF + Paris climate + intensive reforestation
+EOF_plus2_m         # EOF + +2°C warming + moderate management
+EOFD_current_l      # EOFD (degraded) + current + low management
+```
+
+---
 
 ## 🚀 Quick Start
+
+### Installation
+
+```bash
+# Clone repository
+git clone https://github.com/your-org/forest-carbon-lite.git
+cd forest-carbon-lite
+
+# Install dependencies
+pip install -r requirements.txt
+```
 
 ### 1. Single Simulation
 
 ```bash
-# Run a single simulation
+# Run basic simulation
 python main.py simulate --forest ETOF --years 25 --plot
 
 # With uncertainty analysis and reproducibility
@@ -111,32 +351,34 @@ python main.py simulate --forest ETOF --years 25 --plot --uncertainty --seed 42
 
 # Reproducible results - same seed = identical results
 python main.py simulate --forest ETOF --years 25 --seed 123
-python main.py simulate --forest ETOF --years 25 --seed 123  # Identical results
+python main.py simulate --forest ETOF --years 25 --seed 123  # Identical output
 
-# With climate configuration
+# With climate scenario
 python main.py simulate --forest EOF --years 30 --climate paris --seed 456
 ```
 
-### 2. Scenario Analysis
+### 2. Scenario Analysis (Batch Mode)
 
 ```bash
-# Run comprehensive scenario analysis with reproducibility
+# Run comprehensive scenario analysis
 python main.py analyze --forest-types ETOF,EOFD --climates current,paris --years 25 --seed 42
 
-# With custom parameters and uncertainty analysis
+# Custom parameter combinations
 python main.py analyze --forest-types ETOF --climates current,plus2 --managements l,m,i --workers 8 --plots --uncertainty --seed 123
 
-# With managed reforestation and reproducibility
+# With managed reforestation
 python main.py analyze --forest-types ETOF --climates current --managements ir --years 25 --seed 456
 
-# Compare natural vs managed reforestation (reproducible)
+# Compare natural vs managed reforestation
 python main.py analyze --forest-types ETOF --climates current --managements i,ir --years 25 --seed 789
 ```
 
 ### 3. AFM vs Degrading Analysis
 
+Focused comparison of Active Forest Management (AFM) against degrading baseline, excluding reforestation scenarios for clarity:
+
 ```bash
-# Run AFM vs Degrading analysis (no reforestation scenario)
+# Run AFM vs Degrading analysis
 python custom_afm_simulator.py --forest-type ETOF --management i --years 52
 
 # Different forest types and management levels
@@ -151,12 +393,14 @@ python custom_afm_simulator.py --forest-type ETOF --management i --years 52 --no
 ```
 
 **What this does:**
-- Runs only **baseline** (degrading forest) and **management** (AFM) scenarios
-- **Excludes reforestation** completely for clean comparison
+- Compares only **baseline** (degrading forest) vs **management** (AFM)
+- **Excludes reforestation** for clean comparison
 - Shows dramatic difference between degrading vs managed forest
 - Generates focused plots with only relevant scenarios
 
 ### 4. Plot Matrix Comparison
+
+Create comparison matrices by arranging existing plots:
 
 ```bash
 # List available scenarios and plot types
@@ -164,79 +408,96 @@ python plot_matrix_generator.py --list
 
 # Create comparison matrices (legends automatically cropped)
 python plot_matrix_generator.py --plot-type total_carbon_stocks_all_scenarios
-python plot_matrix_generator.py --scenario ETOF_degraded_paris_target_intensive
+python plot_matrix_generator.py --scenario ETOF_paris_i
 
 # Custom matrix comparison
-python plot_matrix_generator.py --scenarios ETOF_degraded_paris_target_intensive ETOF_degraded_current_intensive --plot-types total_carbon_stocks_all_scenarios additionality
+python plot_matrix_generator.py --scenarios ETOF_paris_i ETOF_current_i --plot-types total_carbon_stocks_all_scenarios additionality
 ```
 
 ### 5. Data Matrix Generation
+
+Create comparison matrices from CSV data:
 
 ```bash
 # List available scenarios and data types
 python data_matrix_generator.py --list
 
-# Create matrices from CSV data (more flexible)
-python data_matrix_generator.py --scenarios ETOF_degraded_paris_target_intensive ETOF_degraded_current_intensive --matrix-type carbon_stocks
-python data_matrix_generator.py --scenarios ETOF_degraded_paris_target_intensive ETOF_degraded_current_intensive --matrix-type additionality
-python data_matrix_generator.py --scenarios ETOF_degraded_paris_target_intensive ETOF_degraded_current_intensive --matrix-type economics
+# Create matrices from CSV data
+python data_matrix_generator.py --scenarios EOFD_paris_i EOFD_current_i --matrix-type carbon_stocks
+python data_matrix_generator.py --scenarios ETOF_paris_i ETOF_current_i --matrix-type additionality
+python data_matrix_generator.py --scenarios ETOF_paris_i ETOF_current_i --matrix-type economics
 
-# Combined matrix showing both carbon stocks and additionality
-python data_matrix_generator.py --scenarios ETOF_degraded_paris_target_intensive ETOF_degraded_current_intensive --matrix-type combined
+# Combined matrix (carbon stocks + additionality)
+python data_matrix_generator.py --scenarios ETOF_paris_i ETOF_current_i --matrix-type combined
 
 # Multi-row matrices (2x3, 3x3, etc.)
-python data_matrix_generator.py --scenarios SCENARIO1 SCENARIO2 SCENARIO3 SCENARIO4 SCENARIO5 SCENARIO6 --matrix-type carbon_stocks --max-per-row 3
+python data_matrix_generator.py --scenarios SCENARIO1 SCENARIO2 SCENARIO3 --matrix-type carbon_stocks --max-per-row 3
 ```
 
 ### 6. Comprehensive Analysis
 
 ```bash
-# Run comprehensive analysis on existing results
+# Run comprehensive analysis on batch results
 python main.py comprehensive --results-path output/batch_results.csv --output-dir output/analysis
 ```
 
-## 📊 Key Features
+---
 
-### Core Simulation Engine
-- **Tree Yield Formula (TYF)**: Dynamic forest growth modeling
-- **Carbon Pool Management**: Above-ground biomass, soil carbon, litter, etc.
-- **Disturbance Modeling**: Fire, drought, and other disturbances
-- **Economic Analysis**: NPV, IRR, and carbon credit calculations
-- **AFM vs Degrading Analysis**: Focused comparison without reforestation scenarios
-- **Uncertainty Analysis**: Monte Carlo simulations for parameter uncertainty
+## 📁 Output Structure
 
-### Scenario Management
-- **Dynamic Configuration**: Automatic scenario generation from base configs
-- **Batch Processing**: Parallel execution of multiple scenarios
-- **Climate Integration**: Paris Agreement scenarios, extreme climate, etc.
-- **Management Levels**: Baseline, adaptive, intensive management
-- **Managed Reforestation**: Option to apply management effects to reforestation scenarios
+### Single Simulation Output
 
-### Analysis & Visualization
-- **Comprehensive Analysis**: 12+ individual plots and statistical analysis
-- **Scenario Comparison**: Cross-scenario performance analysis
-- **Economic Assessment**: Cost-effectiveness and financial viability
-- **Statistical Testing**: ANOVA and other statistical analyses
-- **Plot Matrix Generator**: Create comparison matrices from existing plots with automatic legend cropping
-- **Data Matrix Generator**: Create comparison matrices by generating new plots from CSV data
+```
+output/
+└── [scenario_name]/
+    ├── plots/                      # Visualization outputs
+    ├── uncertainty_analysis/       # Monte Carlo results (if enabled)
+    ├── results_summary.csv         # Summary statistics
+    ├── finance_results.csv         # Economic analysis
+    ├── sequestration_curves.csv    # Time series data
+    └── simulation_metadata.json    # Configuration and metadata
+```
+
+### Scenario Analysis Output
+
+```
+output/
+├── batch_results.csv               # All scenarios summary
+├── analysis/                       # Comprehensive analysis
+│   ├── comprehensive_analysis.png  # Main overview plot
+│   ├── 01_climate_impact.png       # Individual plots (12 total)
+│   ├── 02_management_effectiveness.png
+│   ├── ...
+│   ├── scenario_summary.csv        # Data tables (6 total)
+│   ├── forest_type_performance.csv
+│   ├── ...
+│   ├── statistical_analysis.json   # ANOVA and stats
+│   └── comprehensive_report.md     # Analysis report
+└── [individual_scenarios]/         # Individual scenario outputs
+```
+
+---
 
 ## 🔬 Reproducibility & Scientific Rigor
 
-Forest Carbon Lite V.8 implements comprehensive reproducibility features for scientific research:
+FCL v0.1 implements comprehensive reproducibility features for research:
 
 ### Seeded Random Number Generation
-- **Isolated RNG Instances**: Each component uses its own `np.random.default_rng(seed)` instance
-- **No Global State**: Eliminates coupling between different modules
+
+- **Isolated RNG Instances**: Each component uses its own `np.random.default_rng(seed)`
+- **No Global State**: Eliminates coupling between modules
 - **Thread-Safe**: Parallel processing maintains reproducibility
 - **End-to-End Control**: Seed propagates through all stochastic components
 
 ### Reproducible Components
-- **Disturbance Events**: Fire, drought, and mortality events are reproducible
-- **Uncertainty Analysis**: Monte Carlo simulations produce identical results with same seed
-- **Parameter Sampling**: All parameter distributions use seeded sampling
-- **Batch Processing**: Multi-scenario analysis maintains reproducibility
+
+- **Disturbance Events**: Fire, drought, mortality
+- **Uncertainty Analysis**: Monte Carlo simulations
+- **Parameter Sampling**: All distributions seeded
+- **Batch Processing**: Multi-scenario analysis reproducible
 
 ### Usage Examples
+
 ```bash
 # Identical results across runs
 python main.py simulate --forest ETOF --years 25 --seed 42
@@ -250,39 +511,66 @@ python main.py analyze --forest-types ETOF --climates current --managements i --
 ```
 
 ### Scientific Benefits
-- **Experiment Replication**: Other researchers can reproduce your exact results
+
+- **Experiment Replication**: Researchers can reproduce exact results
 - **Parameter Sensitivity**: Test how different random seeds affect outcomes
-- **Publication Ready**: Results are fully documented and reproducible
-- **Quality Assurance**: Verify that code changes don't affect core results
+- **Publication Ready**: Results fully documented and reproducible
+- **Quality Assurance**: Verify code changes don't affect core results
 
-📖 **Detailed Guide**: See [REPRODUCIBILITY_GUIDE.md](REPRODUCIBILITY_GUIDE.md) for comprehensive reproducibility documentation.
+---
 
-## 🌲 Managed Reforestation
+## 🎯 Advanced Features
 
-The system supports two types of reforestation scenarios:
+### Uncertainty Analysis
 
-### Natural Reforestation (Default)
-- **Management Level**: `intensive` (or any standard management level)
-- **Characteristics**: Passive forest restoration without ongoing management
-- **Parameters**: Natural growth rates, mortality, and disturbance patterns
-- **Use Case**: Protected areas, wilderness restoration, passive carbon projects
+Monte Carlo analysis for parameter uncertainty quantification:
 
-### Managed Reforestation (New)
-- **Management Level**: `intensive_managed_reforestation`
-- **Characteristics**: Active forest restoration with ongoing management
-- **Parameters**: Enhanced growth rates, reduced mortality, lower disturbance
-- **Use Case**: Active reforestation projects, managed carbon projects
+```python
+from forest_carbon import ForestCarbonSimulator
 
-### Management Levels Available
-- `baseline` - No management effects (degraded baseline)
-- `moderate` - Moderate management effects
-- `adaptive` - Adaptive management effects  
-- `intensive` - Intensive management effects (natural reforestation)
-- `intensive_managed_reforestation` - Intensive management effects (managed reforestation)
+simulator = ForestCarbonSimulator(
+    forest_type='ETOF',
+    years=25,
+    uncertainty_analysis=True,
+    n_iterations=1000,
+    seed=42  # Reproducible uncertainty analysis
+)
+results = simulator.run()
+```
 
-## 🔧 Advanced Usage
+**Uncertainty parameters sampled:**
+- Maximum biomass (M): ±15% CV
+- Growth multiplier (y): ±20% CV
+- FPI multiplier: ±25% CV
+- Mortality rates: Beta distribution
+- Disturbance parameters: Gamma distribution
 
-### Using the Package Directly
+**Output:** 50% and 90% confidence intervals, parameter correlation matrices, sensitivity rankings
+
+### Economic Analysis
+
+NPV and IRR calculations aligned with carbon markets:
+
+```python
+# Net Present Value
+NPV = -C₀ + Σ[(Rₜ - Cₜ)/(1+r)ᵗ] + VT/(1+r)ᵀ
+
+# Carbon Credits (within crediting period)
+Creditsₜ = max(0, ΔCₜ) × (1-b) × P_CO2(t)
+```
+
+Where:
+- C₀ = Initial establishment cost
+- Rₜ = Carbon credit revenue (year t)
+- Cₜ = Management costs (year t)
+- VT = Terminal value
+- r = Real discount rate
+- b = Buffer withholding (default 0.20)
+- P_CO2(t) = Time-varying carbon price
+
+**Economic Parameters:** See Table 4 above
+
+### Custom Analysis
 
 ```python
 from forest_carbon import ForestCarbonSimulator, ScenarioManager, ComprehensiveAnalyzer
@@ -292,7 +580,8 @@ simulator = ForestCarbonSimulator(
     forest_type='ETOF',
     years=25,
     area_ha=1000,
-    output_dir='output'
+    output_dir='output',
+    seed=42
 )
 results = simulator.run(generate_plots=True)
 
@@ -300,9 +589,10 @@ results = simulator.run(generate_plots=True)
 manager = ScenarioManager()
 results = manager.run_analysis(
     forest_types=['ETOF', 'EOF'],
-    climates=['current', 'paris_target'],
-    managements=['baseline', 'adaptive'],
-    years=25
+    climates=['current', 'paris'],
+    managements=['l', 'm', 'i'],
+    years=25,
+    seed=42
 )
 
 # Comprehensive analysis
@@ -310,320 +600,162 @@ analyzer = ComprehensiveAnalyzer(results_path='output/batch_results.csv')
 analyzer.run_complete_analysis()
 ```
 
-### Configuration Management
+---
 
-```python
-from forest_carbon.utils import ConfigLoader
-from forest_carbon.scenarios import ForestType, ClimateScenario, ManagementLevel
+## ⚠️ Known Limitations (Section 6 of Technical Paper)
 
-# Discover available configurations
-forest_types = ForestType.get_available_types()
-climates = ClimateScenario.get_available_scenarios()
-managements = ManagementLevel.get_available_levels()
+### Model Limitations
 
-print(f"Available forest types: {forest_types}")
-print(f"Available climates: {climates}")
-print(f"Available managements: {managements}")
-```
+1. **Spatial Simplification**: No landscape connectivity or edge effects
+2. **Static Parameters**: Climate and management effects don't vary with forest age
+3. **Linear Climate Response**: May underestimate threshold effects
+4. **Simplified Mortality**: Doesn't capture pest/disease dynamics
+5. **Carbon Pool Transfers**: Fixed rates don't respond to environmental conditions
+6. **Constant Management Intensity**: v0.1 doesn't model temporal de-escalation of AFM
 
-## 📁 Output Structure
+### Key Assumptions Requiring Review
 
-### Single Simulation Output
-```
-output/
-├── [scenario_name]/
-│   ├── plots/                      # Individual scenario plots
-│   ├── uncertainty_analysis/       # Uncertainty analysis (if enabled)
-│   ├── results_summary.csv         # Summary results
-│   ├── finance_results.csv         # Economic results
-│   └── simulation_metadata.json    # Simulation metadata
-```
+**Climate Sensitivity:**
+- 10% productivity loss per degree warming based on temperate forest studies (Wood et al. 2015, Wardlaw 2021)
+- May be conservative for some forest types, optimistic for others
 
-### Scenario Analysis Output
-```
-output/
-├── batch_results.csv               # Batch results summary
-├── analysis/                       # Comprehensive analysis
-│   ├── comprehensive_analysis.png  # Main analysis plot
-│   ├── 01_climate_impact.png       # Individual plots
-│   ├── 02_management_effectiveness.png
-│   ├── ...                         # 12 total individual plots
-│   ├── scenario_summary.csv        # Data tables
-│   ├── forest_type_performance.csv
-│   ├── ...                         # 6 total data tables
-│   ├── statistical_analysis.json   # Statistical results
-│   └── comprehensive_report.md     # Analysis report
-└── [individual_scenario_outputs]/  # Individual scenario results
-```
+**Management Effectiveness:**
+- 20-30% growth improvement assumes moderate intervention (Paul et al. 2018, Paul & Roxburgh 2025)
+- Intensive management might achieve 40-50%, low management only 10-15%
 
-## 🎨 Visualization
+**Disturbance Return Intervals:**
+- Fire frequencies based on historical data may not reflect future climate-driven changes
+- See Table 3 for current climate adjustment factors
 
-The system includes a comprehensive color management system:
+### Validation Status (Section 4.2)
 
-```python
-from forest_carbon.utils.colors import color_manager
+**Validated Components:**
+- Tree Yield Formula implementation (matches FullCAM specifications)
+- IPCC carbon accounting framework
+- Economic calculation logic
 
-# Get scenario colors
-baseline_color = color_manager.get_scenario_color('baseline')
-management_color = color_manager.get_scenario_color('management')
+**Requires Validation:**
+- Integrated carbon pool transfers over time
+- Climate sensitivity responses in practice
+- Management effect magnitudes in real projects
+- Multi-year projection accuracy
+- Economic projections against actual project outcomes
 
-# Get forest type colors
-etof_color = color_manager.get_forest_type_color('ETOF')
+**Critical Limitation:** Without field validation, FCL should be used for preliminary screening and scenario comparison only, not as the sole basis for project investment decisions or MRV reporting.
 
-# Get complete styling
-style = color_manager.get_scenario_style('management')
-# Returns: {'color': '#3498db', 'linestyle': '-', 'linewidth': 2.5, 'alpha': 0.8}
-```
-
-## 🔬 Scientific Background
-
-### Tree Yield Formula (TYF)
-The TYF is a dynamic forest growth model that simulates:
-- **Mortality (M)**: Tree death rates under different scenarios
-- **Growth (G)**: Biomass accumulation rates
-- **Yield (y)**: Carbon sequestration efficiency
-
-### Carbon Pools
-- **Above-Ground Biomass (AGB)**: Living tree biomass
-- **Below-Ground Biomass (BGB)**: Root systems
-- **Litter**: Dead organic matter
-- **Soil Carbon**: Organic carbon in soil
-- **Harvested Wood Products (HWP)**: Long-term carbon storage
-
-### Climate Integration
-- **Current Climate**: Baseline conditions
-- **Paris Target**: 1.5°C warming scenario
-- **Paris Overshoot**: 2.0°C warming scenario
-- **Extreme Climate**: High temperature, low rainfall
-
-## 🌲 AFM vs Degrading Analysis
-
-The custom AFM simulator (`custom_afm_simulator.py`) provides focused analysis comparing Active Forest Management (AFM) against degrading baseline scenarios, without the complexity of reforestation scenarios.
-
-### Key Benefits
-- **Clean Comparison**: Only baseline (degrading) vs management (AFM) scenarios
-- **No Reforestation Clutter**: Excludes reforestation scenarios for focused analysis
-- **Dramatic Results**: Shows stark contrast between degrading and managed forests
-- **Realistic Parameters**: Uses proper intensive management configurations
-
-### Example Results
-```
-Key Results:
-  Degrading Baseline: 475.1 t CO2e/ha
-  AFM Management: 1048.0 t CO2e/ha
-  Carbon Additionality: 572.9 t CO2e/ha
-  AFM NPV: $98,180,607/ha
-```
-
-### Management Levels
-- **baseline**: No management effects (degraded forest)
-- **moderate**: Moderate management effects (y_multiplier: 1.2)
-- **adaptive**: Adaptive management effects (y_multiplier: 1.35)
-- **intensive**: Intensive management effects (y_multiplier: 1.5)
-
-### Output Files
-```
-output/ETOF_current_intensive_afm_only/
-├── afm_analysis_summary.csv          # Summary results
-├── baseline_results/                 # Detailed baseline data
-├── management_results/               # Detailed AFM data
-└── plots/                           # Comparison visualizations
-    ├── total_carbon_stocks_all_scenarios.png  # Baseline vs AFM trajectories
-    └── additionality.png                      # AFM additionality (difference)
-```
-
-## 📊 Plot Matrix Generator
-
-The Plot Matrix Generator (`plot_matrix_generator.py`) creates comparison matrices by pulling existing plots from different scenarios into one PNG file. **No new computations needed** - it simply arranges existing plot images in a grid format with automatic legend cropping for clean comparison.
-
-### Key Features
-- **🎯 Legend Cropping**: Automatically crops repetitive legends from individual plots (default)
-- **📐 Multiple Matrix Types**: Plot-type matrices, scenario matrices, and custom matrices
-- **🎨 Flexible Layout**: Control grid size and arrangement
-- **📈 High Quality**: 300 DPI output suitable for publications
-
-### Quick Start
-
-```bash
-# List available scenarios and plot types
-python plot_matrix_generator.py --list
-
-# Compare one plot type across all scenarios (legends cropped)
-python plot_matrix_generator.py --plot-type total_carbon_stocks_all_scenarios
-
-# Show all plots for one scenario (legends cropped)
-python plot_matrix_generator.py --scenario ETOF_burnt_paris_overshoot_intensive
-
-# Custom matrix with specific scenarios and plot types
-python plot_matrix_generator.py --scenarios ETOF_burnt_paris_overshoot_intensive ETOF_burnt_paris_target_intensive --plot-types total_carbon_stocks_all_scenarios additionality
-
-# Keep legends when needed
-python plot_matrix_generator.py --plot-type additionality --keep-legends
-```
-
-### Available Plot Types
-- `additionality` - Carbon Additionality
-- `biomass_all_scenarios` - Biomass All Scenarios  
-- `carbon_pools_comparison` - Carbon Pools Comparison
-- `economics_management` - Economics - Management
-- `economics_reforestation` - Economics - Reforestation
-- `total_carbon_stocks_all_scenarios` - Total Carbon Stocks
-- And 5 more plot types...
-
-### Example Commands
-
-```bash
-# Compare carbon stocks across climate scenarios
-python plot_matrix_generator.py --scenarios ETOF_burnt_paris_overshoot_intensive ETOF_burnt_paris_target_intensive ETOF_paris_overshoot_intensive --plot-types total_carbon_stocks_all_scenarios
-
-# Compare management intensity
-python plot_matrix_generator.py --scenarios ETOF_burnt_paris_overshoot_intensive ETOF_burnt_paris_overshoot_moderate --plot-types additionality carbon_pools_comparison economics_management
-
-# Control grid layout
-python plot_matrix_generator.py --plot-type additionality --max-per-row 6
-```
-
-### Output Files
-All matrices are saved to the `output_matrix` folder with descriptive names:
-- `total_carbon_stocks_all_scenarios_matrix_comparison.png` - All scenarios for one plot type
-- `ETOF_burnt_paris_overshoot_intensive_all_plots_matrix.png` - All plots for one scenario  
-- `custom_matrix_3x2.png` - Custom 3 scenarios × 2 plot types matrix
-
-📖 **Detailed Guide**: See [documentation/PLOT_MATRIX_GUIDE.md](documentation/PLOT_MATRIX_GUIDE.md) for comprehensive usage documentation.
-
-## 📊 Data Matrix Generator
-
-The Data Matrix Generator (`data_matrix_generator.py`) creates comparison matrices by generating **new plots from CSV data** rather than pulling existing plot images. This provides more flexibility for custom data-driven comparisons and allows you to create matrices even when individual plot images don't exist.
-
-### Key Features
-- **📈 Data-Driven**: Creates plots directly from CSV data files
-- **🎯 Multiple Matrix Types**: Carbon stocks, additionality, economics, and combined matrices
-- **🎨 Flexible Visualization**: Custom plot generation with consistent styling
-- **📊 Multi-Row Layouts**: Support for 2x3, 3x3, and other grid arrangements
-- **📊 No Dependencies on Existing Plots**: Works even if individual plot images are missing
-
-### Available Matrix Types
-
-#### Carbon Stocks Matrix
-```bash
-python data_matrix_generator.py --scenarios ETOF_degraded_paris_target_intensive ETOF_degraded_current_intensive --matrix-type carbon_stocks
-```
-- Shows all three scenarios (baseline, management, reforestation) for each scenario
-- Data source: `sequestration_curves.csv`
-
-#### Additionality Matrix
-```bash
-python data_matrix_generator.py --scenarios ETOF_degraded_paris_target_intensive ETOF_degraded_current_intensive --matrix-type additionality
-```
-- Shows carbon additionality (difference from baseline or vs 0 for reforestation)
-- Data source: `sequestration_curves.csv`
-
-#### Economics Matrix
-```bash
-python data_matrix_generator.py --scenarios ETOF_degraded_paris_target_intensive ETOF_degraded_current_intensive --matrix-type economics
-```
-- Shows NPV and other economic metrics as bar charts
-- Data source: `results_summary.csv`
-
-#### Combined Matrix
-```bash
-python data_matrix_generator.py --scenarios ETOF_degraded_paris_target_intensive ETOF_degraded_current_intensive --matrix-type combined
-```
-- Shows both carbon stocks AND additionality side-by-side for each scenario
-- Data source: `sequestration_curves.csv`
-
-### Data Matrix vs Plot Matrix
-
-| Feature | Data Matrix Generator | Plot Matrix Generator |
-|---------|----------------------|----------------------|
-| **Data Source** | CSV files | Existing PNG images |
-| **Flexibility** | High - custom plots | Medium - existing plots only |
-| **Speed** | Slower - generates plots | Faster - arranges images |
-| **Customization** | Full control over plot style | Limited to existing plot style |
-| **Use Case** | Custom analysis, new visualizations | Quick comparison of existing plots |
-
-📖 **Detailed Guide**: See [documentation/DATA_MATRIX_GUIDE.md](documentation/DATA_MATRIX_GUIDE.md) for comprehensive usage documentation.
-
-### Configuration Reference
-When using matrix generators, scenario names follow the pattern: `{SITE}_{CLIMATE}_{MANAGEMENT}`
-
-**Examples with new simplified names:**
-```bash
-# ETOF (Eucalypt Tall Open Forest) scenarios
-ETOF_current_i      # ETOF + current climate + intensive management
-ETOF_paris_ir       # ETOF + Paris climate + intensive management + reforestation  
-ETOF_plus2_m        # ETOF + plus2°C + moderate management
-ETOF_plus3_lr       # ETOF + plus3°C + light management + reforestation
-ETOF_current_afm_m  # ETOF + current climate + moderate AFM only
-ETOF_paris_afm_m    # ETOF + Paris climate + moderate AFM only
-
-# EOFD (Eucalypt Open Forest Degraded) scenarios  
-EOFD_current_m      # EOFD + current climate + moderate management
-EOFD_paris_ir       # EOFD + Paris climate + intensive management + reforestation
-EOFD_current_afm_m  # EOFD + current climate + moderate AFM only
-EOFD_plus2_afm_m    # EOFD + plus2°C + moderate AFM only
-```
-
-## 📈 Performance
-
-- **Parallel Processing**: Multi-core batch execution
-- **Memory Efficient**: Optimized data structures
-- **Fast Visualization**: Matplotlib with optimized rendering
-- **Scalable**: Handles 100+ scenarios efficiently
-
-## 🛠️ Development
-
-### Running Tests
-```bash
-# Test single simulation
-python main.py simulate --forest ETOF --years 5 --plot
-
-# Test scenario analysis
-python main.py analyze --forest-types ETOF --climates current --years 5
-
-# Test comprehensive analysis
-python main.py comprehensive --results-path output/batch_results.csv
-
-# Test AFM vs Degrading analysis
-python custom_afm_simulator.py --forest-type ETOF --management i --years 5
-```
-
-### Adding New Forest Types
-1. Create `configs/base/site_[FOREST_TYPE].yaml`
-2. Add TYF calibrations for baseline, management, reforestation
-3. Update forest type discovery in `ForestType` class
-
-### Adding New Climate Scenarios
-1. Create `configs/base/climate_[SCENARIO].yaml`
-2. Define temperature and rainfall adjustments
-3. Update climate discovery in `ClimateScenario` class
-
-## 📚 Documentation
-
-- **API Documentation**: Available in docstrings
-- **Configuration Guide**: See `configs/base/` examples
-- **Scenario Builder Guide**: See `scenario_system/` documentation
-- **Validation Guide**: See `validation.py` for input requirements
+---
 
 ## 🤝 Contributing
 
+We welcome contributions in several forms:
+
+### 1. Validation Partnerships
+- Share multi-year carbon monitoring data from restoration sites
+- ACCU issuance records from completed projects
+- Chronosequence data across climate gradients
+- Realized project economics and carbon credit revenues
+
+### 2. Code Contributions
 1. Follow the unified package structure
 2. Add comprehensive docstrings
 3. Include type hints
 4. Test with multiple scenarios
 5. Update documentation
 
-## 📄 License
+### 3. Scientific Review
+- Review mathematical formulations (Section 2 of paper)
+- Challenge parameter assumptions (Section 6 of paper)
+- Suggest additional validation approaches (Section 4.2.3 of paper)
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- **Healthy Forests Foundation**
-- **FullCAM**: Australian Government forest carbon model
-- **Tree Yield Formula**: Scientific foundation
-- **Climate Science**: IPCC scenarios and data
+### 4. Feature Requests
+Priority areas for v0.2 development:
+- Dynamic parameter adjustment with forest age
+- Non-linear climate response options
+- Spatial connectivity effects
+- Enhanced fire modeling
+- Biodiversity co-benefits tracking
+- Temporal de-escalation of AFM interventions
 
 ---
 
-**Forest Carbon Lite V.1.0** - Unified, scalable, and comprehensive forest carbon modeling.
+## 📚 References
+
+### Core Model Development
+
+**FullCAM & Tree Yield Formula:**
+- Forrester et al. (2025) "Calibration of the FullCAM model for Australian native vegetation." Ecological Modelling 508: 111204
+- Paul & Roxburgh (2020) "Predicting carbon sequestration of woody biomass following land restoration." Forest Ecology and Management 460: 117838
+- Paul & Roxburgh (2025) "Carbon sequestration in woody biomass of mulga (Acacia aneura) woodlands: confidence in prediction using the carbon accounting model FullCAM." The Rangeland Journal 47(3)
+- Waterworth et al. (2007) "A generalised hybrid process-empirical model for predicting plantation forest growth." Forest Ecology and Management 238: 231-243
+
+**Maximum Biomass & Site Productivity:**
+- Roxburgh et al. (2019) "A revised above-ground maximum biomass layer for the Australian continent." Forest Ecology and Management 432: 264-275
+- Kesteven and Landsberg (2004) "Developing a national forest productivity model for Australia." NCAS Technical Report No. 27, Australian Greenhouse Office
+
+**Environmental Plantings:**
+- Paul et al. (2018) "Using measured stocks of biomass and litter carbon to constrain modelled estimates of sequestration of soil organic carbon under contrasting mixed-species environmental plantings." Science of The Total Environment 615: 348-359
+
+### Active Forest Management
+
+**AFM Framework:**
+- Bennett et al. (2024) "Active Management: A Definition and Considerations for Implementation in Forests of Temperate Australia." Australian Forestry 87(3): 125-147
+
+### Climate & Fire
+
+**Climate Impacts:**
+- IPCC (2023) Climate Change 2023: Synthesis Report. Geneva: IPCC
+- Wardlaw (2021) "The effect of climate change on the health and productivity of Australia's temperate eucalypt forests." Australian Forestry
+
+**Fire Regime Changes:**
+- Boer et al. (2021) "Multi-decadal increase of forest burned area in Australia is linked to climate change." Nature Communications 12: 6921
+- Furlaud et al. (2021) "Bioclimatic drivers of fire severity across the Australian geographical range of giant Eucalyptus forests." Journal of Ecology 109: 2444-2457
+- McColl-Gausden et al. (2022) "The fuel-climate-fire conundrum: How will fire regimes change in temperate eucalypt forests under climate change?" Global Change Biology 28(17): 5211-5226
+
+### Economics & Carbon Markets
+
+**Cost-Effectiveness:**
+- Austin et al. (2020) "The economic costs of planting, preserving, and managing the world's forests to mitigate climate change." Nature Communications 11: 5946
+- Busch et al. (2024) "Cost-effectiveness of natural forest regeneration." Nature Climate Change 14(9): 996-1002
+- Evans (2018) "Effective incentives for reforestation: lessons from Australia's carbon farming policies." Current Opinion in Environmental Sustainability 32: 38-45
+- Jonson & Freudenberger (2011) "Restore and sequester: Estimating biomass in native Australian woodland ecosystems for their carbon-funded restoration." Australian Journal of Botany 59(7): 640
+- Pacheco et al. (2024) [Add full citation if available]
+
+**Global Carbon Sequestration:**
+- Cook-Patton et al. (2020) "Mapping carbon accumulation potential from global natural forest regrowth." Nature 585: 545-550
+
+### Validation Data
+
+**Australian Forest Inventories:**
+- Volkova et al. (2015) "Empirical estimates of aboveground carbon in open eucalyptus forests of south-eastern Australia and its potential implication for national carbon accounting." Forests 6(10): 3395-3411
+
+**Additional Parameters:**
+- Mokany et al. (2006) "Critical analysis of root:shoot ratios in terrestrial biomes." Global Change Biology 12: 84-96
+- Ximenes & Wright (2006) "Forests, wood and Australia's carbon balance." Pre-published. DOI: 10.13140/RG.2.1.3297.4886
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+## 🙏 Acknowledgments
+
+- **Healthy Forests Foundation** - Project support and guidance
+- **FullCAM Development Team** - Australian Government forest carbon model
+- **Scientific Community** - Peer review and validation partnerships sought
+
+---
+
+## 📧 Contact
+
+**Author:** Pia Angelike  
+**Organization:** Healthy Forests Foundation  
+**Email:** pia.angelike@healthyforestsfoundation.org
+
+**For validation partnerships, peer review feedback, or collaboration inquiries, please contact us.**
+
+---
+
+**Forest Carbon Lite v0.1** - Professional Review Draft for scenario exploration and preliminary analysis. Built on validated components (FullCAM TYF), requiring integrated system validation before operational deployment. Seeking validation partnerships and peer review feedback.
