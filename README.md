@@ -344,33 +344,33 @@ pip install -r requirements.txt
 
 ```bash
 # Run basic simulation
-python main.py simulate --forest ETOF --years 25 --plot
+python main.py simulate --site ETOF --years 25 --plot
 
 # With uncertainty analysis and reproducibility
-python main.py simulate --forest ETOF --years 25 --plot --uncertainty --seed 42
+python main.py simulate --site ETOF --years 25 --plot --uncertainty --seed 42
 
 # Reproducible results - same seed = identical results
-python main.py simulate --forest ETOF --years 25 --seed 123
-python main.py simulate --forest ETOF --years 25 --seed 123  # Identical output
+python main.py simulate --site ETOF --years 25 --seed 123
+python main.py simulate --site ETOF --years 25 --seed 123  # Identical output
 
 # With climate scenario
-python main.py simulate --forest EOF --years 30 --climate paris --seed 456
+python main.py simulate --site EOF --years 30 --climate paris --seed 456
 ```
 
 ### 2. Scenario Analysis (Batch Mode)
 
 ```bash
 # Run comprehensive scenario analysis
-python main.py analyze --forest-type ETOF,EOFD --climate current,paris --years 25 --seed 42
+python main.py analyze --site ETOF,EOFD --climate current,paris --years 25 --seed 42
 
 # Custom parameter combinations
-python main.py analyze --forest-type ETOF --climate current,plus2 --management l,m,i --workers 8 --plot --uncertainty --seed 123
+python main.py analyze --site ETOF --climate current,plus2 --management l,m,i --workers 8 --plot --uncertainty --seed 123
 
 # With managed reforestation
-python main.py analyze --forest-type ETOF --climate current --management ir --years 25 --seed 456
+python main.py analyze --site ETOF --climate current --management ir --years 25 --seed 456
 
 # Compare natural vs managed reforestation
-python main.py analyze --forest-type ETOF --climate current --management i,ir --years 25 --seed 789
+python main.py analyze --site ETOF --climate current --management i,ir --years 25 --seed 789
 ```
 
 ### 3. AFM vs Degrading Analysis

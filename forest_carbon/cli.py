@@ -25,22 +25,22 @@ def main():
     
     Examples:
         # Run single simulation with reproducibility
-        fcl simulate --forest ETOF --years 25 --plot --seed 42
+        fcl simulate --site ETOF --years 25 --plot --seed 42
         
         # Run scenario analysis (natural reforestation) with reproducibility
-        fcl analyze --forest-type ETOF,EOF --climate current,paris_target --years 25 --seed 123
+        fcl analyze --site ETOF,EOF --climate current,paris_target --years 25 --seed 123
         
         # Run scenario analysis with managed reforestation and uncertainty
-        fcl analyze --forest-type ETOF --climate current --management intensive_managed_reforestation --years 25 --uncertainty --seed 456
+        fcl analyze --site ETOF --climate current --management intensive_managed_reforestation --years 25 --uncertainty --seed 456
         
         # Compare natural vs managed reforestation (reproducible)
-        fcl analyze --forest-type ETOF --climate current --management intensive,intensive_managed_reforestation --years 25 --seed 789
+        fcl analyze --site ETOF --climate current --management intensive,intensive_managed_reforestation --years 25 --seed 789
         
         # Run comprehensive analysis on existing results
         fcl comprehensive --results-path output/batch_results.csv
         
         # Reproducible uncertainty analysis
-        fcl simulate --forest ETOF --years 25 --uncertainty --seed 42
+        fcl simulate --site ETOF --years 25 --uncertainty --seed 42
 
     Management Levels:
         baseline                    - No management effects (degraded baseline)
@@ -57,9 +57,9 @@ def main():
     pass
 
 @main.command()
-@click.option('--forest', required=True, 
+@click.option('--site', required=True, 
               type=click.Choice(['EOF', 'ETOF', 'AFW', 'EW_OW', 'Mallee', 'Other_FW', 'Rainforest', 'Shrubland']),
-              help='Forest type')
+              help='Site/forest type')
 @click.option('--years', type=int, default=25, help='Simulation years')
 @click.option('--area', type=float, default=1000.0, help='Area in hectares')
 @click.option('--output', type=str, default='output', help='Output directory')
@@ -69,13 +69,13 @@ def main():
 @click.option('--uncertainty/--no-uncertainty', default=False, help='Enable or disable uncertainty analysis')
 @click.option('--no-validate', is_flag=True, help='Disable validation')
 @click.option('--seed', type=int, help='Random seed for reproducibility')
-def simulate(forest, years, area, output, config, climate, plot, uncertainty, no_validate, seed):
+def simulate(site, years, area, output, config, climate, plot, uncertainty, no_validate, seed):
     """Run single simulation."""
     print("🌲 Forest Carbon Lite - Single Simulation")
     print("=" * 50)
     
     simulator = ForestCarbonSimulator(
-        forest_type=forest,
+        forest_type=site,
         years=years,
         area_ha=area,
         output_dir=output,
@@ -98,8 +98,8 @@ def simulate(forest, years, area, output, config, climate, plot, uncertainty, no
         print(f"📈 Uncertainty analysis saved to: {output}/[scenario_name]/uncertainty_analysis/")
 
 @main.command()
-@click.option('--forest-type', type=str, default='ETOF,EOF,AFW',
-              help='Comma-separated forest types')
+@click.option('--site', type=str, default='ETOF,EOF,AFW',
+              help='Comma-separated site/forest types')
 @click.option('--climate', type=str, default='current,paris_target,paris_overshoot',
               help='Comma-separated climate scenarios')
 @click.option('--management', type=str, default='baseline,adaptive,intensive',
@@ -110,7 +110,7 @@ def simulate(forest, years, area, output, config, climate, plot, uncertainty, no
 @click.option('--uncertainty/--no-uncertainty', default=False, help='Enable or disable uncertainty analysis')
 @click.option('--output-dir', type=str, default='output', help='Output directory')
 @click.option('--seed', type=int, help='Random seed for reproducibility')
-def analyze(forest_type, climate, management, years, workers, plot, uncertainty, output_dir, seed):
+def analyze(site, climate, management, years, workers, plot, uncertainty, output_dir, seed):
     """Run scenario analysis."""
     print("🌲 Forest Carbon Lite - Scenario Analysis")
     print("=" * 50)
@@ -118,7 +118,7 @@ def analyze(forest_type, climate, management, years, workers, plot, uncertainty,
     manager = ScenarioManager()
     
     # Parse forest types, climates, and managements
-    forest_types_list = [f.strip() for f in forest_type.split(',')]
+    forest_types_list = [f.strip() for f in site.split(',')]
     climates_list = [c.strip() for c in climate.split(',')]
     managements_list = [m.strip() for m in management.split(',')]
     
