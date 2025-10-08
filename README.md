@@ -271,9 +271,10 @@ forest-carbon-lite/
 │   └── visualization/               # Plotting
 │       └── plotter.py              # Matplotlib visualization
 ├── main.py                         # Unified CLI entry point
-├── custom_afm_simulator.py         # AFM vs Degrading tool
-├── plot_matrix_generator.py        # Plot comparison matrices
-├── data_matrix_generator.py        # Data-driven matrices
+├── forest_carbon/tools/            # Analysis tools
+│   ├── custom_afm_simulator.py     # AFM vs Degrading tool
+│   ├── plot_matrix_generator.py    # Plot comparison matrices
+│   └── data_matrix_generator.py    # Data-driven matrices
 ├── configs/                        # Configuration files
 │   ├── base/                       # Base configurations
 │   │   ├── management_*.yaml       # Management configs
@@ -379,17 +380,17 @@ Focused comparison of Active Forest Management (AFM) against degrading baseline,
 
 ```bash
 # Run AFM vs Degrading analysis
-python custom_afm_simulator.py --forest-type ETOF --management i --years 52
+python main.py afm --site ETOF --management i --years 52
 
 # Different forest types and management levels
-python custom_afm_simulator.py --forest-type AFW --management m --years 25
-python custom_afm_simulator.py --forest-type EOF --management l --years 30
+python main.py afm --site AFW --management m --years 25
+python main.py afm --site EOF --management l --years 30
 
 # Custom output directory
-python custom_afm_simulator.py --forest-type ETOF --management i --years 52 --output-dir my_afm_analysis
+python main.py afm --site ETOF --management i --years 52 --output-dir my_afm_analysis
 
 # Skip plot generation for faster execution
-python custom_afm_simulator.py --forest-type ETOF --management i --years 52 --no-plots
+python main.py afm --site ETOF --management i --years 52 --no-plots
 ```
 
 **What this does:**
@@ -404,14 +405,14 @@ Create comparison matrices by arranging existing plots:
 
 ```bash
 # List available scenarios and plot types
-python plot_matrix_generator.py --list
+python main.py plot-matrix --list
 
 # Create comparison matrices (legends automatically cropped)
-python plot_matrix_generator.py --plot-type total_carbon_stocks_all_scenarios
-python plot_matrix_generator.py --scenario ETOF_paris_i
+python main.py plot-matrix --plot-type total_carbon_stocks_all_scenarios
+python main.py plot-matrix --scenario ETOF_paris_i
 
 # Custom matrix comparison
-python plot_matrix_generator.py --scenarios ETOF_paris_i ETOF_current_i --plot-types total_carbon_stocks_all_scenarios additionality
+python main.py plot-matrix --scenarios ETOF_paris_i,ETOF_current_i --plot-types total_carbon_stocks_all_scenarios,additionality
 ```
 
 ### 5. Data Matrix Generation
@@ -420,18 +421,18 @@ Create comparison matrices from CSV data:
 
 ```bash
 # List available scenarios and data types
-python data_matrix_generator.py --list
+python main.py data-matrix --list
 
 # Create matrices from CSV data
-python data_matrix_generator.py --scenarios EOFD_paris_i EOFD_current_i --matrix-type carbon_stocks
-python data_matrix_generator.py --scenarios ETOF_paris_i ETOF_current_i --matrix-type additionality
-python data_matrix_generator.py --scenarios ETOF_paris_i ETOF_current_i --matrix-type economics
+python main.py data-matrix --scenarios EOFD_paris_i,EOFD_current_i --matrix-type carbon_stocks
+python main.py data-matrix --scenarios ETOF_paris_i,ETOF_current_i --matrix-type additionality
+python main.py data-matrix --scenarios ETOF_paris_i,ETOF_current_i --matrix-type economics
 
 # Combined matrix (carbon stocks + additionality)
-python data_matrix_generator.py --scenarios ETOF_paris_i ETOF_current_i --matrix-type combined
+python main.py data-matrix --scenarios ETOF_paris_i,ETOF_current_i --matrix-type combined
 
 # Multi-row matrices (2x3, 3x3, etc.)
-python data_matrix_generator.py --scenarios SCENARIO1 SCENARIO2 SCENARIO3 --matrix-type carbon_stocks --max-per-row 3
+python main.py data-matrix --scenarios SCENARIO1,SCENARIO2,SCENARIO3 --matrix-type carbon_stocks --max-per-row 3
 ```
 
 ### 6. Comprehensive Analysis

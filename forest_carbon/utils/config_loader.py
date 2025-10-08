@@ -48,7 +48,7 @@ class ConfigLoader:
             if climate_config:
                 # Convert validated config to dict for climate adjustments
                 config_dict = validated_config.dict()
-                climate_config_dict = load_climate_config(Path("configs/templates"), climate_config)
+                climate_config_dict = load_climate_config(Path("configs/base"), climate_config)
                 adjusted_config_dict = apply_climate_adjustments_to_config(config_dict, climate_config_dict)
                 
                 # Convert back to validated config (this bypasses validation for climate-adjusted params)
@@ -91,7 +91,7 @@ class ConfigLoader:
             
             # Apply climate adjustments if specified
             if climate_config:
-                climate_config_dict = load_climate_config(Path("configs/templates"), climate_config)
+                climate_config_dict = load_climate_config(Path("configs/base"), climate_config)
                 config = apply_climate_adjustments_to_config(config, climate_config_dict)
             
             # Merge with default economics if economics not in site config
