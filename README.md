@@ -519,6 +519,217 @@ python main.py analyze --forest-types ETOF --climates current --managements i --
 
 ---
 
+## 🔧 Configuration Examples
+
+### Site Configuration Example
+
+**File:** `configs/base/site_ETOF.yaml` - Eucalypt Tall Open Forest
+
+```yaml
+# Eucalypt Tall Open Forest (ETOF) - FullCAM Calibrated Parameters
+# Based on Paul KI and Roxburgh SH (2025) - 9,300+ field plots validation
+
+# Forest type parameters
+K_AGB: 300.0  # Maximum potential biomass (tonnes/ha)
+G: 11.254      # Age of maximum growth rate (from FullCAM tyf_G)
+root_shoot: 0.25  # Root-to-shoot ratio
+
+# Initial biomass values (tonnes/ha)
+initial_biomass_baseline: 284.0    # Typical ETOF AGB from FullCAM
+initial_biomass_management: 284.0  # Same starting biomass for management
+initial_biomass_reforestation: 10.0  # Reforestation starts from zero
+
+# Mortality rates (annual)
+m_degraded: 0.015        # ETOF degraded mortality
+m_managed: 0.015         # ETOF managed mortality
+m_reforestation: 0.015   # ETOF reforestation mortality
+
+# TYF calibrations (Tree Yield Formula parameters)
+tyf_calibrations:
+  baseline:
+    M: 300.0       # Maximum potential biomass 
+    G: 11.254      # Age of maximum growth
+    y: 1           # Growth multiplier (baseline)
+  management:
+    M: 300.0       # Same maximum potential
+    G: 11.254      # Same growth timing
+    y: 1           # Growth multiplier (management effects applied by scenario builder)
+  reforestation:
+    M: 300.0       # Same maximum potential
+    G: 11.254      # Same growth timing
+    y: 1.0         # Growth multiplier (management effects applied by scenario builder)
+```
+
+### Climate Configuration Example
+
+**File:** `configs/base/climate_plus2.yaml` - +2°C Warming Scenario
+
+```yaml
+# Paris Agreement 2.0°C Climate Scenario
+# Exceeds critical thresholds - approaching ecosystem collapse
+
+name: "plus2"
+description: "Exceeds 2°C - approaching ecosystem collapse thresholds"
+display_name: "Paris 2.0°C Overshoot"
+
+# Climate effects on forest parameters
+effects:
+  fpi_adjustment: 0.78         # 22% productivity reduction
+  temp_change: 2.0             # Additional 2.0°C warming
+  rainfall_change: -0.20       # 20% rainfall reduction
+  mortality_adjustment: 1.65   # 65% mortality increase
+  disturbance_adjustment: 1.7  # 70% disturbance increase
+
+# Climate metadata
+metadata:
+  temperature_target: "2.0°C above pre-industrial"
+  rainfall_change: "20% reduction"
+  fire_risk: "70% increase"
+  drought_frequency: "Frequent and severe"
+  ecosystem_threshold: "Approaching collapse"
+```
+
+### Management Configuration Example
+
+**File:** `configs/base/management_i.yaml` - Intensive Management
+
+```yaml
+# Intensive Management - Maximum intervention with intensive forest management
+
+name: "i"
+description: "Intensive management - Maximum intervention with intensive forest management"
+display_name: "Intensive Management"
+
+# Management effects on forest parameters
+effects:
+  y_multiplier: 1.5            # 50% growth improvement
+  mortality_factor: 0.5        # 50% mortality reduction
+  disturbance_factor: 0.3      # 70% disturbance reduction
+  prescribed_burn_effect: 0.2  # 20% biomass consumption from frequent burns
+
+# Management practices
+practices:
+  prescribed_burning: "Very frequent (3 year intervals)"
+  thinning: "Intensive for maximum growth"
+  species_mixing: "Climate-adapted species with genetic diversity"
+  pest_control: "Integrated pest management with monitoring"
+  fire_management: "Advanced fuel management and fire breaks"
+  climate_adaptation: "Species selection and assisted migration"
+  carbon_monitoring: "Continuous carbon stock monitoring"
+```
+
+---
+
+## 💻 Usage Examples
+
+### Basic Simulation
+
+```python
+from forest_carbon import ForestCarbonSimulator
+
+# Initialize simulator with forest type and climate scenario
+sim = ForestCarbonSimulator(
+    forest_type='ETOF',  # Eucalypt Tall Open Forest
+    years=25,
+    area_ha=1000.0,
+    climate_config='current'  # Current climate conditions
+)
+
+# Run simulation with specific management level
+results = sim.run(
+    scenario='management',  # or 'baseline', 'reforestation'
+    management_level='i',   # Intensive management
+    generate_plots=True,
+    seed=42  # For reproducibility
+)
+
+# Get key outputs from results
+carbon_data = results.sequestration_curves
+economic_data = results.economics
+summary_stats = results.summary
+
+# Extract specific metrics
+final_carbon = carbon_data['management_co2e'].iloc[-1]
+npv_per_ha = economic_data['management']['npv_per_ha']
+total_npv = npv_per_ha * sim.area_ha
+
+print(f"Final carbon stock: {final_carbon:.1f} tCO2e/ha")
+print(f"NPV per hectare: ${npv_per_ha:,.0f}/ha")
+print(f"Total project NPV: ${total_npv:,.0f}")
+```
+
+### Batch Analysis
+
+```python
+from forest_carbon import ScenarioManager
+
+# Initialize scenario manager
+manager = ScenarioManager()
+
+# Run comprehensive analysis across multiple dimensions
+results = manager.run_analysis(
+    forest_types=['ETOF', 'EOF', 'AFW'],  # Multiple forest types
+    climates=['current', 'paris', 'plus2'],  # Climate scenarios
+    managements=['l', 'm', 'i'],  # Management levels
+    years=25,
+    workers=4,  # Parallel processing
+    generate_plots=True,
+    seed=123  # Reproducible results
+)
+
+# Access comprehensive results
+summary = results['summary']
+batch_results = results['batch_results']  # CSV with all scenarios
+plots_dir = results['plots_directory']
+analysis_dir = results['analysis_path']
+
+# Individual scenario results
+for scenario_name, scenario_data in results['scenario_results'].items():
+    print(f"Scenario: {scenario_name}")
+    print(f"  Final carbon: {scenario_data['final_co2e_stock']:.1f} tCO2e/ha")
+    print(f"  NPV: ${scenario_data['npv_per_ha']:,.0f}/ha")
+    print(f"  IRR: {scenario_data['irr']:.1f}%")
+```
+
+### Uncertainty Analysis
+
+```python
+from forest_carbon import ForestCarbonSimulator
+
+# Initialize simulator with uncertainty enabled
+sim = ForestCarbonSimulator(
+    forest_type='ETOF',
+    years=25,
+    area_ha=1000.0,
+    enable_uncertainty=True,
+    seed=456  # Reproducible uncertainty analysis
+)
+
+# Run uncertainty analysis
+uncertainty_results = sim.run_uncertainty_analysis(
+    n_iterations=1000,
+    parameter_distributions={
+        'M_max_biomass': {'type': 'normal', 'cv': 0.15},
+        'G_age_max_growth': {'type': 'normal', 'cv': 0.10},
+        'y_growth_multiplier': {'type': 'normal', 'cv': 0.20},
+        'fpi_multiplier': {'type': 'normal', 'cv': 0.25},
+        'mortality_rate': {'type': 'beta', 'alpha': 2, 'beta': 5}
+    }
+)
+
+# Access uncertainty statistics
+uncertainty_stats = uncertainty_results['statistics']
+confidence_intervals = uncertainty_results['confidence_intervals']
+
+# Print key uncertainty metrics
+print("Uncertainty Analysis Results:")
+print(f"Mean final carbon: {uncertainty_stats['mean_final_carbon']:.1f} tCO2e/ha")
+print(f"90% CI: {confidence_intervals['final_carbon']['5th']:.1f} - {confidence_intervals['final_carbon']['95th']:.1f} tCO2e/ha")
+print(f"Mean NPV: ${uncertainty_stats['mean_npv']:,.0f}/ha")
+```
+
+---
+
 ## 🎯 Advanced Features
 
 ### Uncertainty Analysis
@@ -755,6 +966,38 @@ This project is licensed under the MIT License.
 **Email:** pia.angelike@healthyforestsfoundation.org
 
 **For validation partnerships, peer review feedback, or collaboration inquiries, please contact us.**
+
+---
+
+## 📚 Glossary
+
+**ACCU:** Australian Carbon Credit Unit - One tonne CO₂e equivalent
+
+**AFM:** Active Forest Management - Temporary restoration interventions in degraded forests that work toward obsolescence
+
+**AFW:** Acacia Forest Woodland - Forest type with lower biomass potential (~49 t/ha)
+
+**AGB/BGB:** Above/Below-ground biomass - Living tree biomass components
+
+**EOF:** Eucalypt Open Forest - Forest type with moderate biomass potential (~170 t/ha)
+
+**ETOF:** Eucalypt Tall Open Forest - Forest type with high biomass potential (~290 t/ha)
+
+**FPI:** Forest Productivity Index - Climate effect metric that adjusts growth based on temperature and rainfall
+
+**FullCAM:** Full Carbon Accounting Model - Australian Government's national forest carbon model
+
+**IRR:** Internal Rate of Return - Economic metric for project profitability
+
+**MRV:** Monitoring, Reporting, and Verification - Carbon credit project requirements
+
+**NPV:** Net Present Value - Economic metric for project value
+
+**RMSE:** Root Mean Square Error - Statistical accuracy metric
+
+**TYF:** Tree Yield Formula - Mathematical growth equation validated against 9,300+ plots
+
+**Validation:** Independent verification of model predictions against field measurements
 
 ---
 
