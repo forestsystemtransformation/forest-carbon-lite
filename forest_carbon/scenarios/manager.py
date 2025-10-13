@@ -230,10 +230,10 @@ Examples:
     )
     
     parser.add_argument(
-        '--forest-types',
+        '--site',
         type=str,
         default='ETOF,EOF,AFW',
-        help='Comma-separated forest types (default: ETOF,EOF,AFW)'
+        help='Comma-separated site/forest types (default: ETOF,EOF,AFW)'
     )
     
     parser.add_argument(

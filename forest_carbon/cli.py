@@ -71,7 +71,7 @@ def main():
 @click.option('--seed', type=int, help='Random seed for reproducibility')
 def simulate(site, years, area, output, config, climate, plot, uncertainty, no_validate, seed):
     """Run single simulation."""
-    print("🌲 Forest Carbon Lite - Single Simulation")
+    print("Forest Carbon Lite - Single Simulation")
     print("=" * 50)
     
     simulator = ForestCarbonSimulator(
@@ -112,7 +112,7 @@ def simulate(site, years, area, output, config, climate, plot, uncertainty, no_v
 @click.option('--seed', type=int, help='Random seed for reproducibility')
 def analyze(site, climate, management, years, workers, plot, uncertainty, output_dir, seed):
     """Run scenario analysis."""
-    print("🌲 Forest Carbon Lite - Scenario Analysis")
+    print("Forest Carbon Lite - Scenario Analysis")
     print("=" * 50)
     
     manager = ScenarioManager()
@@ -145,7 +145,7 @@ def analyze(site, climate, management, years, workers, plot, uncertainty, output
               help='Output directory for analysis')
 def comprehensive(results_path, output_dir):
     """Run comprehensive analysis on existing results."""
-    print("🌲 Forest Carbon Lite - Comprehensive Analysis")
+    print("Forest Carbon Lite - Comprehensive Analysis")
     print("=" * 50)
     
     analyzer = ComprehensiveAnalyzer(results_path=Path(results_path))

@@ -47,8 +47,8 @@ class Plotter:
         self.plots_dir.mkdir(parents=True, exist_ok=True)
         
         # Set default figure parameters
-        self.fig_width = 12  # Increased to accommodate external legends
-        self.fig_height = 6
+        self.fig_width = 10  # Reduced since legends will be underneath
+        self.fig_height = 7  # Increased to accommodate legends underneath
         self.dpi = 300
     
     def _save_figure(self, filename: str, formats: List[str] = ['png', 'svg']) -> Dict[str, Path]:
@@ -123,7 +123,7 @@ class Plotter:
         ax.set_xlabel('Year', fontsize=12)
         ax.set_ylabel('Above-ground biomass (t/ha)', fontsize=12)
         ax.set_title('Biomass accumulation - all scenarios', fontsize=14, fontweight='bold')
-        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), ncol=1, frameon=True, fancybox=True, shadow=True)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=3, frameon=True, fancybox=True, shadow=True)
         ax.grid(True, alpha=0.3)
         
         plt.tight_layout()
@@ -213,7 +213,7 @@ class Plotter:
         ax.set_title('Final carbon pools comparison', fontsize=14, fontweight='bold')
         ax.set_xticks(x)
         ax.set_xticklabels([self._format_label(s) for s in scenarios])
-        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), frameon=True, fancybox=True, shadow=True)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=4, frameon=True, fancybox=True, shadow=True)
         ax.grid(True, alpha=0.3, axis='y')
         
         plt.tight_layout()
@@ -244,7 +244,7 @@ class Plotter:
         ax.set_xlabel('Year')
         ax.set_ylabel('Cash Flow ($)')
         ax.set_title('Annual cash flow')
-        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), frameon=True, fancybox=True, shadow=True)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=3, frameon=True, fancybox=True, shadow=True)
         ax.grid(True, alpha=0.3)
         ax.axhline(y=0, color='black', linewidth=0.5)
         
@@ -374,7 +374,7 @@ class Plotter:
         ax.set_title('Total carbon stock - all scenarios', fontsize=14, fontweight='bold')
         
         # Add legend with better positioning
-        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), frameon=True, fancybox=True, shadow=True)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=3, frameon=True, fancybox=True, shadow=True)
         
         # Add grid
         ax.grid(True, alpha=0.3, linestyle='--')
@@ -479,7 +479,7 @@ class Plotter:
         ax.set_title('Net carbon abatement - all scenarios (from baseline 0)', fontsize=14, fontweight='bold')
         
         # Add legend with better positioning
-        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), frameon=True, fancybox=True, shadow=True)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=3, frameon=True, fancybox=True, shadow=True)
         
         # Add grid
         ax.grid(True, alpha=0.3, linestyle='--')
@@ -547,7 +547,7 @@ class Plotter:
         ax.set_title('Reforestation Minus Baseline Losses\n(True Net Benefit of Reforestation)', 
                     fontsize=14, fontweight='bold', pad=20)
         
-        ax.legend(loc='best', frameon=True, fancybox=True, shadow=True)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=3, frameon=True, fancybox=True, shadow=True)
         ax.grid(True, alpha=0.3)
         
         # Formatting
@@ -610,7 +610,7 @@ class Plotter:
         ax.set_title('Management Benefits Minus Reforestation Gains\n(Managing Existing Forest Without Planting New Trees)', 
                     fontsize=14, fontweight='bold', pad=20)
         
-        ax.legend(loc='best', frameon=True, fancybox=True, shadow=True)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=3, frameon=True, fancybox=True, shadow=True)
         ax.grid(True, alpha=0.3)
         
         # Formatting
@@ -698,7 +698,7 @@ class Plotter:
         
         
         # Add legend with better positioning
-        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5), frameon=True, fancybox=True, shadow=True)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=3, frameon=True, fancybox=True, shadow=True)
         
         # Add grid
         ax.grid(True, alpha=0.3, linestyle='--')
