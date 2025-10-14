@@ -1,9 +1,9 @@
-# Intensive intensity - Adaptive Management Scenario
-# Maximum intervention with intensive forest management
+# Intensive Management - AFM Applied to Standing Forest Only
+# Active Forest Management applied to existing standing forest (no reforestation)
 
 name: "i"
-description: "Intensive management - Maximum intervention with intensive forest management"
-display_name: "Intensive Management"
+description: "Intensive AFM - Applied to standing forest only. Maximum intervention with intensive forest management of existing forest."
+display_name: "Intensive AFM (Standing Forest)"
 
 # Management effects on forest parameters
 effects:
@@ -21,6 +21,7 @@ practices:
   fire_management: "Advanced fuel management and fire breaks"
   climate_adaptation: "Species selection and assisted migration"
   carbon_monitoring: "Continuous carbon stock monitoring"
+  scope: "Applied to existing standing forest only - no reforestation"
   
 # Research references
 references:

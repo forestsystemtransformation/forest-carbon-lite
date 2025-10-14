@@ -1,9 +1,9 @@
-# Moderate intensity - Adaptive Management Scenario
-# Climate-specific adaptations with maximum improvements
+# Moderate Management - AFM Applied to Standing Forest Only
+# Active Forest Management applied to existing standing forest (no reforestation)
 
 name: "m"
-description: "Moderate management - Climate adaptive interventions with maximum improvements"
-display_name: "Moderate Management"
+description: "Moderate AFM - Applied to standing forest only. Climate adaptive interventions with maximum improvements to existing forest."
+display_name: "Moderate AFM (Standing Forest)"
 
 # Management effects on forest parameters
 effects:
@@ -20,6 +20,7 @@ practices:
   pest_control: "Integrated pest management"
   fire_management: "Advanced fuel management"
   climate_adaptation: "Species selection for future climate"
+  scope: "Applied to existing standing forest only - no reforestation"
   
 # Research references
 references:

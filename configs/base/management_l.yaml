@@ -1,9 +1,9 @@
-#Light intensity - Adaptive Management Scenario
-# Adapative management with regular with moderate severity
+# Light Management - AFM Applied to Standing Forest Only
+# Active Forest Management applied to existing standing forest (no reforestation)
 
 name: "l"
-description: "Light management - Regular interventions with noticeable improvements"
-display_name: "Light Management"
+description: "Light AFM - Applied to standing forest only. Regular interventions with noticeable improvements to existing forest."
+display_name: "Light AFM (Standing Forest)"
 
 # Management effects on forest parameters
 effects:  
@@ -19,6 +19,7 @@ practices:
   species_mixing: "Limited"
   pest_control: "Basic"
   fire_management: "Fuel reduction"
+  scope: "Applied to existing standing forest only - no reforestation"
   
 # Research references
 references:

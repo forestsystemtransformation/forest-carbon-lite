@@ -1,10 +1,12 @@
 # Forest Carbon Lite v0.1 - Professional Review Draft
 
-A transparent Python implementation of forest carbon accounting for restoration and management decision support under climate change. Built on the validated FullCAM Tree Yield Formula (TYF) with integrated climate scenarios and economic analysis.
+The Forest Carbon Lite Simulator (FCL v0.1) presents an open-source, scientifically-grounded framework for projecting carbon sequestration outcomes under climate change and management scenarios. Designed for rapid scenario exploration, the model addresses the gap between time intensive national carbon models and simple growth calculations. FCL enables practitioners to quickly create and compare multiple strategies, evaluating reforestation versus restoration approaches, management interventions, and climate adaptation pathways. Key features include orthogonal separation of climate and management effects to prevent double-counting, modular scenario generation, and integrated economic analysis aligned with carbon credit markets. Built on FullCAM's validated Tree Yield Formula and incorporating stochastic mortality and disturbance processes, FCL supports critical professional decisions such as site selection, management intensity optimisation, and climate adaptation planning. The model is designed for preliminary screening and scenario exploration, with field validation required before operational deployment for investment decisions.
 
 **Version:** 0.1 (Professional Review Draft)  
 **Status:** Seeking validation partnerships and peer review feedback  
 **Institution:** Healthy Forests Foundation
+
+📄 **[Download Technical Paper (PDF)](Forest_Carbon_Lite_V0.1.pdf)** - Complete technical documentation with mathematical formulations, validation status, and detailed methodology.
 
 ---
 
@@ -179,7 +181,7 @@ Default parameters for FCL v0.1 from published FullCAM calibrations:
 
 | Code | Name | Applied to | y Multiplier | Description |
 |------|------|-----------|--------------|-------------|
-| `l` | Low Management | AFM in degraded forest | 1.10 | Minimal intervention |
+| `l` | Light Management | AFM in degraded forest | 1.10 | Minimal intervention |
 | `m` | Moderate Management | AFM in degraded forest | 1.20 | Standard practices |
 | `i` | Intensive Management | AFM in degraded forest | 1.35 | High intervention |
 | `mr` | Moderate Reforestation | Reforestation and AFM | 1.20 | Moderate management + planting |
@@ -308,7 +310,7 @@ FCL uses YAML configuration files organized by category:
 - `climate_plus3.yaml` - +3°C warming
 
 #### Management Configurations (`management_*.yaml`)
-- `management_l.yaml` - Low management (minimal intervention)
+- `management_l.yaml` - Light management (minimal intervention)
 - `management_m.yaml` - Moderate management (standard practices)
 - `management_i.yaml` - Intensive management (high intervention)
 - `management_ir.yaml` - Intensive management + reforestation
@@ -828,8 +830,8 @@ analyzer.run_complete_analysis()
 ### Key Assumptions Requiring Review
 
 **Climate Sensitivity:**
-- 10% productivity loss per degree warming based on temperate forest studies (Wood et al. 2015, Wardlaw 2021)
-- May be conservative for some forest types, optimistic for others
+- 10% productivity loss per degree warming represents a central estimate from literature showing high variability: 5-15% for temperate forests, 3-8% for drought-adapted systems, and up to 20% for moisture-limited forests (Wood et al. 2015, Wardlaw 2021, Choat et al. 2018)
+- Linear response may underestimate non-linear threshold responses (McDowell et al. 2018)
 
 **Management Effectiveness:**
 - 20-30% growth improvement assumes moderate intervention (Paul et al. 2018, Paul & Roxburgh 2025)
@@ -884,9 +886,16 @@ Priority areas for v0.2 development:
 - Dynamic parameter adjustment with forest age
 - Non-linear climate response options
 - Spatial connectivity effects
-- Enhanced fire modeling
+- Enhanced fire modelling
 - Biodiversity co-benefits tracking
 - Temporal de-escalation of AFM interventions
+
+---
+
+## 📄 Documentation
+
+### Technical Paper
+- **[Forest_Carbon_Lite_V0.1.pdf](Forest_Carbon_Lite_V0.1.pdf)** - Complete technical paper with mathematical formulations, validation status, and methodology
 
 ---
 

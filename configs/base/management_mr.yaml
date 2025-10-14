@@ -1,28 +1,28 @@
-# Moderate Management with Managed Reforestation
-# Maximum intervention including managed reforestation scenarios
+# Moderate Management with Reforestation - AFM Applied to Both Standing Forest and Reforestation
+# Active Forest Management applied to both existing standing forest AND reforestation sites
 
-name: "moderate_reforestation"
-description: "Intensive management with managed reforestation - Maximum intervention including reforestation"
-display_name: "Intensive Management (Managed Reforestation)"
+name: "mr"
+description: "Moderate AFM with Reforestation - Applied to both standing forest and reforestation sites. Moderate interventions with reforestation management."
+display_name: "Moderate AFM + Reforestation"
 
 # Management effects on forest parameters
 effects:
-  y_multiplier: 1.35            # 50% growth improvement
-  mortality_factor: 0.65        # 50% mortality reduction
-  disturbance_factor: 0.5      # 50% disturbance reduction
-  prescribed_burn_effect: 0.15  # 20% biomass consumption from frequent burns
-  apply_to_reforestation: true # Enable management effects for reforestation scenarios
+  y_multiplier: 1.35            
+  mortality_factor: 0.65       
+  disturbance_factor: 0.5      
+  prescribed_burn_effect: 0.15  
+  apply_to_reforestation: true 
 
 # Management practices
 practices:
-  prescribed_burning: "Very frequent (3 year intervals)"
-  thinning: "Intensive for maximum growth"
-  species_mixing: "Climate-adapted species with genetic diversity"
-  pest_control: "Integrated pest management with monitoring"
-  fire_management: "Advanced fuel management and fire breaks"
-  climate_adaptation: "Species selection and assisted migration"
-  carbon_monitoring: "Continuous carbon stock monitoring"
+  prescribed_burning: "Frequent (5 year intervals)"
+  thinning: "Intensive for resilience"
+  species_mixing: "Climate-adapted species"
+  pest_control: "Integrated pest management"
+  fire_management: "Advanced fuel management"
+  climate_adaptation: "Species selection for future climate"
   reforestation_management: "Active management of reforestation areas"
+  scope: "Applied to both existing standing forest AND reforestation sites"
   
 # Research references
 references:
