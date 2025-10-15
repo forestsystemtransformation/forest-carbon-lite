@@ -219,7 +219,7 @@ Examples:
     python -m forest_carbon.scenarios.manager
     
     # Run specific forest types and climates
-    python -m forest_carbon.scenarios.manager --forest-types ETOF,AFW --climates current,paris_target
+    python -m forest_carbon.scenarios.manager --forest-types ETOF,AFW --climates current,paris
     
     # Run with custom years and generate plots
     python -m forest_carbon.scenarios.manager --years 30 --plots
@@ -239,8 +239,8 @@ Examples:
     parser.add_argument(
         '--climates',
         type=str,
-        default='current,paris_target,paris_overshoot',
-        help='Comma-separated climate scenarios (default: current,paris_target,paris_overshoot)'
+        default='current,paris,plus2,plus3',
+        help='Comma-separated climate scenarios (default: current,paris,plus2,plus3)'
     )
     
     parser.add_argument(

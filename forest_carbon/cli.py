@@ -28,7 +28,7 @@ def main():
         fcl simulate --site ETOF --years 25 --plot --seed 42
         
         # Run scenario analysis (natural reforestation) with reproducibility
-        fcl analyze --site ETOF,EOF --climate current,paris_target --years 25 --seed 123
+        fcl analyze --site ETOF,EOF --climate current,paris --years 25 --seed 123
         
         # Run scenario analysis with managed reforestation and uncertainty
         fcl analyze --site ETOF --climate current --management intensive_managed_reforestation --years 25 --uncertainty --seed 456
