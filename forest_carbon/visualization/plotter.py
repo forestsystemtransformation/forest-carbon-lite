@@ -57,7 +57,7 @@ class Plotter:
         self.legend_fontsize = 14
         self.tick_fontsize = 14
     
-    def _save_figure(self, filename: str, formats: List[str] = ['png', 'svg']) -> Dict[str, Path]:
+    def _save_figure(self, filename: str, formats: List[str] = ['png']) -> Dict[str, Path]:
         """
         Save current figure in multiple formats and return paths.
         
@@ -130,7 +130,7 @@ class Plotter:
         ax.set_ylabel('Above-ground biomass (t/ha)', fontsize=self.label_fontsize, fontweight='bold')
         ax.set_title('Biomass accumulation - all scenarios', fontsize=self.title_fontsize, fontweight='bold', pad=20)
         ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, frameon=False, fontsize=self.legend_fontsize)
-        ax.grid(True, alpha=0.3)
+        ax.grid(False)
         ax.tick_params(axis='both', which='major', labelsize=self.tick_fontsize)
         
         plt.tight_layout()
@@ -389,8 +389,8 @@ class Plotter:
         # Add legend with better positioning
         ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, frameon=False, fontsize=self.legend_fontsize)
         
-        # Add grid
-        ax.grid(True, alpha=0.3, linestyle='--')
+        # Remove grid
+        ax.grid(False)
         
         # Add zero line for reference
         ax.axhline(y=0, color='black', linewidth=0.8, alpha=0.6)
@@ -497,8 +497,8 @@ class Plotter:
         # Add legend with better positioning
         ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, frameon=False, fontsize=self.legend_fontsize)
         
-        # Add grid
-        ax.grid(True, alpha=0.3, linestyle='--')
+        # Remove grid
+        ax.grid(False)
         
         # Add zero line for reference
         ax.axhline(y=0, color='black', linewidth=0.8, alpha=0.6)
@@ -567,7 +567,7 @@ class Plotter:
                     fontsize=self.title_fontsize, fontweight='bold', pad=20)
         
         ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, frameon=False, fontsize=self.legend_fontsize)
-        ax.grid(True, alpha=0.3)
+        ax.grid(False)
         ax.tick_params(axis='both', which='major', labelsize=self.tick_fontsize)
         
         # Formatting
@@ -631,7 +631,7 @@ class Plotter:
                     fontsize=self.title_fontsize, fontweight='bold', pad=20)
         
         ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, frameon=False, fontsize=self.legend_fontsize)
-        ax.grid(True, alpha=0.3)
+        ax.grid(False)
         ax.tick_params(axis='both', which='major', labelsize=self.tick_fontsize)
         
         # Formatting
@@ -721,8 +721,8 @@ class Plotter:
         # Add legend with better positioning
         ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, frameon=False, fontsize=self.legend_fontsize)
         
-        # Add grid
-        ax.grid(True, alpha=0.3, linestyle='--')
+        # Remove grid
+        ax.grid(False)
         
         # Add zero line for reference
         ax.axhline(y=0, color='black', linewidth=0.8, alpha=0.6)

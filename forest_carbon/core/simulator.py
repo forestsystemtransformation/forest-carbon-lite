@@ -933,7 +933,7 @@ class ForestCarbonSimulator:
         
         return ranking
     
-    def generate_plots(self, results: SimulationResults):
+    def generate_plots(self, results: SimulationResults, include_optional_plots: bool = False):
         """Generate all visualization plots."""
         # Use the output directory directly - Plotter will create plots subdirectory
         plotter = Plotter(self.output_dir)
@@ -941,15 +941,17 @@ class ForestCarbonSimulator:
         # Prepare data for plotting
         plot_results = {self.forest_type: results.sequestration_curves}
         
-        # Generate plots
+        # Generate default plots
         plotter.plot_biomass_comparison(plot_results, [self.forest_type])
         plotter.plot_total_carbon_stocks_all_scenarios(plot_results, [self.forest_type])
-        # Removed net_carbon_abatement plot - total carbon stocks plot is sufficient
-        plotter.plot_reforestation_minus_losses(plot_results, [self.forest_type])  # Reforestation minus losses
-        plotter.plot_management_minus_reforestation(plot_results, [self.forest_type])  # Management minus reforestation
         plotter.plot_project_level_additionality(plot_results, [self.forest_type])  # Now saves as additionality.png
         # Poster plot without additionality inset
         plotter.plot_poster_stocks_only(plot_results, [self.forest_type])
+        
+        # Generate optional plots if requested
+        if include_optional_plots:
+            plotter.plot_reforestation_minus_losses(plot_results, [self.forest_type])  # Reforestation minus losses
+            plotter.plot_management_minus_reforestation(plot_results, [self.forest_type])  # Management minus reforestation
         
         # Plot carbon pools for each scenario
         for scenario in ['baseline', 'management', 'reforestation']:
@@ -966,12 +968,13 @@ class ForestCarbonSimulator:
         
         print(f"Plots saved to {self.output_dir}/plots/")
     
-    def run(self, generate_plots: bool = False):
+    def run(self, generate_plots: bool = False, include_optional_plots: bool = False):
         """
         Run complete simulation.
         
         Args:
             generate_plots: Whether to generate visualization plots
+            include_optional_plots: Whether to include optional specialized plots (reforestation minus losses, management minus reforestation)
         """
         # Validate simulation parameters
         assert self.years > 0, f"Simulation years must be positive, got {self.years}"
@@ -998,7 +1001,7 @@ class ForestCarbonSimulator:
         # Generate plots if requested
         if generate_plots:
             print("Generating plots...")
-            self.generate_plots(results)
+            self.generate_plots(results, include_optional_plots)
         
         # Run uncertainty analysis if enabled
         if self.enable_uncertainty:

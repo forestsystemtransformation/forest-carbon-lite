@@ -40,6 +40,7 @@ class ScenarioManager:
     def run_analysis(self, forest_types: List[str], climates: List[str], 
                     managements: List[str], years: int = 25, 
                     workers: int = 4, generate_plots: bool = False,
+                    include_optional_plots: bool = False,
                     enable_uncertainty: bool = False, output_dir: str = "output",
                     seed: Optional[int] = None) -> dict:
         """
@@ -52,6 +53,7 @@ class ScenarioManager:
             years: Simulation duration in years
             workers: Number of parallel workers
             generate_plots: Whether to generate individual plots
+            include_optional_plots: Whether to include optional specialized plots (reforestation minus losses, management minus reforestation)
             enable_uncertainty: Whether to enable uncertainty analysis
             output_dir: Output directory for results
             seed: Random seed for reproducibility
@@ -129,6 +131,7 @@ class ScenarioManager:
         sim_params = {
             'area_ha': 1000.0,
             'generate_plots': generate_plots,
+            'include_optional_plots': include_optional_plots,
             'enable_uncertainty': enable_uncertainty,
             'seed': seed
         }

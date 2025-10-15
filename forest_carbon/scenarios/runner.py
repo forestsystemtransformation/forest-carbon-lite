@@ -33,6 +33,7 @@ class BatchRunner:
                     years: int = None, 
                     area_ha: float = 1000,
                     generate_plots: bool = False,
+                    include_optional_plots: bool = False,
                     enable_uncertainty: bool = False,
                     seed: Optional[int] = None) -> Dict[str, Any]:
         """
@@ -43,6 +44,7 @@ class BatchRunner:
             years: Simulation duration in years
             area_ha: Area in hectares
             generate_plots: Whether to generate plots
+            include_optional_plots: Whether to include optional specialized plots
             enable_uncertainty: Whether to enable uncertainty analysis
             seed: Random seed for reproducibility
             
@@ -79,7 +81,7 @@ class BatchRunner:
                 seed=seed
             )
             
-            results = simulator.run(generate_plots=generate_plots)
+            results = simulator.run(generate_plots=generate_plots, include_optional_plots=include_optional_plots)
             
             # Extract key metrics
             summary = results.summary

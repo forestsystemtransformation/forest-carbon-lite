@@ -66,10 +66,11 @@ def main():
 @click.option('--config', type=str, help='Custom config file')
 @click.option('--climate', type=str, help='Climate configuration')
 @click.option('--plot', is_flag=True, help='Generate plots')
+@click.option('--optional-plots', is_flag=True, help='Include optional specialized plots (reforestation minus losses, management minus reforestation)')
 @click.option('--uncertainty/--no-uncertainty', default=False, help='Enable or disable uncertainty analysis')
 @click.option('--no-validate', is_flag=True, help='Disable validation')
 @click.option('--seed', type=int, help='Random seed for reproducibility')
-def simulate(site, years, area, output, config, climate, plot, uncertainty, no_validate, seed):
+def simulate(site, years, area, output, config, climate, plot, optional_plots, uncertainty, no_validate, seed):
     """Run single simulation."""
     print("Forest Carbon Lite - Single Simulation")
     print("=" * 50)
@@ -86,7 +87,7 @@ def simulate(site, years, area, output, config, climate, plot, uncertainty, no_v
         seed=seed
     )
     
-    results = simulator.run(generate_plots=plot)
+    results = simulator.run(generate_plots=plot, include_optional_plots=optional_plots)
     
     print(f"\n✅ Simulation completed!")
     print(f"📁 Results saved to: {output}/")
@@ -107,10 +108,11 @@ def simulate(site, years, area, output, config, climate, plot, uncertainty, no_v
 @click.option('--years', type=int, default=25, help='Simulation years')
 @click.option('--workers', type=int, default=4, help='Number of workers')
 @click.option('--plot', is_flag=True, help='Generate individual plots')
+@click.option('--optional-plots', is_flag=True, help='Include optional specialized plots (reforestation minus losses, management minus reforestation)')
 @click.option('--uncertainty/--no-uncertainty', default=False, help='Enable or disable uncertainty analysis')
 @click.option('--output-dir', type=str, default='output', help='Output directory')
 @click.option('--seed', type=int, help='Random seed for reproducibility')
-def analyze(site, climate, management, years, workers, plot, uncertainty, output_dir, seed):
+def analyze(site, climate, management, years, workers, plot, optional_plots, uncertainty, output_dir, seed):
     """Run scenario analysis."""
     print("Forest Carbon Lite - Scenario Analysis")
     print("=" * 50)
@@ -129,6 +131,7 @@ def analyze(site, climate, management, years, workers, plot, uncertainty, output
         years=years,
         workers=workers,
         generate_plots=plot,
+        include_optional_plots=optional_plots,
         enable_uncertainty=uncertainty,
         output_dir=output_dir,
         seed=seed

@@ -206,7 +206,7 @@ class AFMOnlySimulator(ForestCarbonSimulator):
         plt.tight_layout()
         
         # Save with custom filename
-        plotter._save_figure('additionality', formats=['png', 'svg'])
+        plotter._save_figure('additionality', formats=['png'])
 
 def main():
     """Command-line interface for AFM-only simulator."""

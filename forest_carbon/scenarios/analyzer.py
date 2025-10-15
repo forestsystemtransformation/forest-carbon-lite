@@ -112,7 +112,6 @@ class ScenarioAnalyzer:
         
         # Save plots
         plt.savefig(output_dir / 'comprehensive_analysis.png', dpi=300, bbox_inches='tight')
-        plt.savefig(output_dir / 'comprehensive_analysis.svg', bbox_inches='tight')
         plt.close()
         
         print(f"Comprehensive analysis plots saved to: {output_dir}/")

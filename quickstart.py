@@ -46,6 +46,12 @@ def main():
         "Example 1: Single ETOF simulation (25 years, with plots)"
     )
     
+    # Example 1b: Single simulation with optional plots
+    run_example(
+        "fcl simulate --forest ETOF --years 25 --plot --optional-plots --seed 42",
+        "Example 1b: Single ETOF simulation (25 years, with plots including optional specialized plots)"
+    )
+    
     # Example 2: Small scenario analysis
     run_example(
         "fcl analyze --forest-types ETOF --climates current --managements baseline,intensive --years 25 --plots",

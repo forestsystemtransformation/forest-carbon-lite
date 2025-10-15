@@ -582,7 +582,6 @@ class ComprehensiveAnalyzer:
         plt.suptitle('Comprehensive Forest Carbon Scenario Analysis', fontsize=20, fontweight='bold')
         plt.tight_layout()
         plt.savefig(output_dir / 'comprehensive_analysis.png', dpi=300, bbox_inches='tight')
-        plt.savefig(output_dir / 'comprehensive_analysis.svg', bbox_inches='tight')
         plt.close()
         
         print("✅ Comprehensive analysis generated")
@@ -814,7 +813,6 @@ This report analyzes {len(data)} forest carbon scenarios across different forest
 
 ### Comprehensive Analysis:
 - `comprehensive_analysis.png`: Complete visualization suite
-- `comprehensive_analysis.svg`: Vector version of comprehensive analysis
 - `statistical_analysis.json`: Statistical test results
 - `comprehensive_report.md`: This report
 

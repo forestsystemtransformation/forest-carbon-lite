@@ -40,10 +40,10 @@ We are actively seeking validation partnerships to test FCL against 5-10 year mo
 
 ## 📋 Table of Contents
 
+- [Quick Start](#-quick-start)
 - [Key Features](#-key-features)
 - [Scientific Foundation](#-scientific-foundation)
 - [Model Parameters](#-model-parameters)
-- [Quick Start](#-quick-start)
 - [Project Structure](#️-project-structure)
 - [Configuration System](#-configuration-system)
 - [Usage Examples](#-usage-examples)
@@ -52,6 +52,145 @@ We are actively seeking validation partnerships to test FCL against 5-10 year mo
 - [Advanced Features](#-advanced-features)
 - [Known Limitations](#-known-limitations)
 - [Contributing](#-contributing)
+
+---
+
+## 🚀 Quick Start
+
+### Installation
+
+```bash
+# Clone repository
+git clone https://github.com/your-org/forest-carbon-lite.git
+cd forest-carbon-lite
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### 1. Single Simulation
+
+```bash
+# Run basic simulation
+python main.py simulate --site ETOF --years 25 --plot
+
+# With uncertainty analysis and reproducibility
+python main.py simulate --site ETOF --years 25 --plot --uncertainty --seed 42
+
+# With optional specialized plots (reforestation minus losses, management minus reforestation)
+python main.py simulate --site ETOF --years 25 --plot --optional-plots
+
+# Reproducible results - same seed = identical results
+python main.py simulate --site ETOF --years 25 --seed 123
+python main.py simulate --site ETOF --years 25 --seed 123  # Identical output
+
+# With climate scenario
+python main.py simulate --site EOF --years 30 --climate paris --seed 456
+```
+
+### 2. Scenario Analysis (Batch Mode)
+
+```bash
+# Run comprehensive scenario analysis
+python main.py analyze --site ETOF,EOFD --climate current,paris --years 25 --seed 42
+
+# Custom parameter combinations
+python main.py analyze --site ETOF --climate current,plus2 --management l,m,i --workers 8 --plot --uncertainty --seed 123
+
+# With optional specialized plots for all scenarios
+python main.py analyze --site ETOF,EOF --climate current,paris --management l,m,i --plot --optional-plots
+
+# With managed reforestation
+python main.py analyze --site ETOF --climate current --management ir --years 25 --seed 456
+
+# Compare natural vs managed reforestation
+python main.py analyze --site ETOF --climate current --management i,ir --years 25 --seed 789
+```
+
+### 3. AFM vs Degrading Analysis
+
+Focused comparison of Active Forest Management (AFM) against degrading baseline, excluding reforestation scenarios for clarity:
+
+```bash
+# Run AFM vs Degrading analysis
+python main.py afm --site ETOF --management i --years 52
+
+# Different forest types and management levels
+python main.py afm --site AFW --management m --years 25
+python main.py afm --site EOF --management l --years 30
+
+# Custom output directory
+python main.py afm --site ETOF --management i --years 52 --output-dir my_afm_analysis
+
+# Skip plot generation for faster execution
+python main.py afm --site ETOF --management i --years 52 --no-plots
+```
+
+**What this does:**
+- Compares only **baseline** (degrading forest) vs **management** (AFM)
+- **Excludes reforestation** for clean comparison
+- Shows dramatic difference between degrading vs managed forest
+- Generates focused plots with only relevant scenarios
+
+### 4. Plot Matrix Comparison
+
+Create comparison matrices by arranging existing plots:
+
+```bash
+# List available scenarios and plot types
+python main.py plot-matrix --list
+
+# Create comparison matrices (legends automatically cropped)
+python main.py plot-matrix --plot-type total_carbon_stocks_all_scenarios
+python main.py plot-matrix --scenario ETOF_paris_i
+
+# Custom matrix comparison
+python main.py plot-matrix --scenarios ETOF_paris_i,ETOF_current_i --plot-types total_carbon_stocks_all_scenarios,additionality
+```
+
+### 5. Data Matrix Generation
+
+Create comparison matrices from CSV data:
+
+```bash
+# List available scenarios and data types
+python main.py data-matrix --list
+
+# Create matrices from CSV data
+python main.py data-matrix --scenarios EOFD_paris_i,EOFD_current_i --matrix-type carbon_stocks
+python main.py data-matrix --scenarios ETOF_paris_i,ETOF_current_i --matrix-type additionality
+python main.py data-matrix --scenarios ETOF_paris_i,ETOF_current_i --matrix-type economics
+
+# Combined matrix (carbon stocks + additionality)
+python main.py data-matrix --scenarios ETOF_paris_i,ETOF_current_i --matrix-type combined
+
+# Multi-row matrices (2x3, 3x3, etc.)
+python main.py data-matrix --scenarios SCENARIO1,SCENARIO2,SCENARIO3 --matrix-type carbon_stocks --max-per-row 3
+```
+
+### 6. Comprehensive Analysis
+
+```bash
+# Run comprehensive analysis on batch results
+python main.py comprehensive --results-path output/batch_results.csv --output-dir output/analysis
+```
+
+### 📊 Plot Output Format
+
+**Default behavior:** All plots are saved as **PNG files only** for clean, consistent output.
+
+**Optional specialized plots:** Use `--optional-plots` flag to include:
+- Reforestation minus losses analysis
+- Management minus reforestation analysis
+
+**Examples:**
+```bash
+# Standard plots only (PNG format)
+python main.py simulate --site ETOF --years 25 --plot
+
+# Include specialized analysis plots
+python main.py simulate --site ETOF --years 25 --plot --optional-plots
+```
 
 ---
 
@@ -111,7 +250,7 @@ Where:
 
 ```
 Growth = Base × (FPIₜ/FPIᵦₐₛₑₗᵢₙₑ) × y
-                 └──────┬──────┘   └┬┘
+                 └──────┬──────┘  └┬┘
                   Climate only    Mgmt only
 ```
 
@@ -326,122 +465,6 @@ ETOF_current_i      # ETOF + current climate + intensive management
 ETOF_paris_ir       # ETOF + Paris climate + intensive reforestation
 EOF_plus2_m         # EOF + +2°C warming + moderate management
 EOFD_current_l      # EOFD (degraded) + current + low management
-```
-
----
-
-## 🚀 Quick Start
-
-### Installation
-
-```bash
-# Clone repository
-git clone https://github.com/your-org/forest-carbon-lite.git
-cd forest-carbon-lite
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### 1. Single Simulation
-
-```bash
-# Run basic simulation
-python main.py simulate --site ETOF --years 25 --plot
-
-# With uncertainty analysis and reproducibility
-python main.py simulate --site ETOF --years 25 --plot --uncertainty --seed 42
-
-# Reproducible results - same seed = identical results
-python main.py simulate --site ETOF --years 25 --seed 123
-python main.py simulate --site ETOF --years 25 --seed 123  # Identical output
-
-# With climate scenario
-python main.py simulate --site EOF --years 30 --climate paris --seed 456
-```
-
-### 2. Scenario Analysis (Batch Mode)
-
-```bash
-# Run comprehensive scenario analysis
-python main.py analyze --site ETOF,EOFD --climate current,paris --years 25 --seed 42
-
-# Custom parameter combinations
-python main.py analyze --site ETOF --climate current,plus2 --management l,m,i --workers 8 --plot --uncertainty --seed 123
-
-# With managed reforestation
-python main.py analyze --site ETOF --climate current --management ir --years 25 --seed 456
-
-# Compare natural vs managed reforestation
-python main.py analyze --site ETOF --climate current --management i,ir --years 25 --seed 789
-```
-
-### 3. AFM vs Degrading Analysis
-
-Focused comparison of Active Forest Management (AFM) against degrading baseline, excluding reforestation scenarios for clarity:
-
-```bash
-# Run AFM vs Degrading analysis
-python main.py afm --site ETOF --management i --years 52
-
-# Different forest types and management levels
-python main.py afm --site AFW --management m --years 25
-python main.py afm --site EOF --management l --years 30
-
-# Custom output directory
-python main.py afm --site ETOF --management i --years 52 --output-dir my_afm_analysis
-
-# Skip plot generation for faster execution
-python main.py afm --site ETOF --management i --years 52 --no-plots
-```
-
-**What this does:**
-- Compares only **baseline** (degrading forest) vs **management** (AFM)
-- **Excludes reforestation** for clean comparison
-- Shows dramatic difference between degrading vs managed forest
-- Generates focused plots with only relevant scenarios
-
-### 4. Plot Matrix Comparison
-
-Create comparison matrices by arranging existing plots:
-
-```bash
-# List available scenarios and plot types
-python main.py plot-matrix --list
-
-# Create comparison matrices (legends automatically cropped)
-python main.py plot-matrix --plot-type total_carbon_stocks_all_scenarios
-python main.py plot-matrix --scenario ETOF_paris_i
-
-# Custom matrix comparison
-python main.py plot-matrix --scenarios ETOF_paris_i,ETOF_current_i --plot-types total_carbon_stocks_all_scenarios,additionality
-```
-
-### 5. Data Matrix Generation
-
-Create comparison matrices from CSV data:
-
-```bash
-# List available scenarios and data types
-python main.py data-matrix --list
-
-# Create matrices from CSV data
-python main.py data-matrix --scenarios EOFD_paris_i,EOFD_current_i --matrix-type carbon_stocks
-python main.py data-matrix --scenarios ETOF_paris_i,ETOF_current_i --matrix-type additionality
-python main.py data-matrix --scenarios ETOF_paris_i,ETOF_current_i --matrix-type economics
-
-# Combined matrix (carbon stocks + additionality)
-python main.py data-matrix --scenarios ETOF_paris_i,ETOF_current_i --matrix-type combined
-
-# Multi-row matrices (2x3, 3x3, etc.)
-python main.py data-matrix --scenarios SCENARIO1,SCENARIO2,SCENARIO3 --matrix-type carbon_stocks --max-per-row 3
-```
-
-### 6. Comprehensive Analysis
-
-```bash
-# Run comprehensive analysis on batch results
-python main.py comprehensive --results-path output/batch_results.csv --output-dir output/analysis
 ```
 
 ---
