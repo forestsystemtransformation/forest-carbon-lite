@@ -1,6 +1,5 @@
 # Eucalypt Open Forest (EOF) - FullCAM Calibrated Parameters
-# Based on Paul KI and Roxburgh SH (2025) Carbon sequestration in woody biomass of mulga (Acacia aneura) woodlands: confidence in prediction using the carbon accounting model FullCAM. The Rangeland Journal 47, RJ24027. doi:10.1071/RJ24027
-# ~2,438 AGB plots, 300-year spin-ups, 1.825% annual mortality
+# Based on Paul KI and Roxburgh SH (2025) 
 
 # Forest type parameters
 K_AGB: 160.0  # Maximum potential biomass (tonnes/ha)

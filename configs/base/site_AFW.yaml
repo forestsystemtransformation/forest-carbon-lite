@@ -1,6 +1,5 @@
 # Acacia Forest & Woodland - FullCAM Calibrated Parameters
 # Source: Forrester et al. (2025) Ecological Modelling 508:111204 (Table 3 means; Table 7 calibrated params).
-# NOTE: atmsFracRLlitBkdnF for some categories is inferred (not visible in our copy of Table 7 text extraction).
 
 K_AGB: 49.0
 G: 10.0

@@ -47,9 +47,15 @@ class Plotter:
         self.plots_dir.mkdir(parents=True, exist_ok=True)
         
         # Set default figure parameters
-        self.fig_width = 10  # Reduced since legends will be underneath
-        self.fig_height = 7  # Increased to accommodate legends underneath
+        self.fig_width = 12  # Increased for better readability
+        self.fig_height = 8  # Increased to accommodate legends underneath
         self.dpi = 300
+        
+        # Set default font sizes for publication quality
+        self.title_fontsize = 18
+        self.label_fontsize = 16
+        self.legend_fontsize = 14
+        self.tick_fontsize = 14
     
     def _save_figure(self, filename: str, formats: List[str] = ['png', 'svg']) -> Dict[str, Path]:
         """
@@ -120,11 +126,12 @@ class Plotter:
                                label=label, 
                                **scenario_style)
         
-        ax.set_xlabel('Year', fontsize=12)
-        ax.set_ylabel('Above-ground biomass (t/ha)', fontsize=12)
-        ax.set_title('Biomass accumulation - all scenarios', fontsize=14, fontweight='bold')
-        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=3, frameon=True, fancybox=True, shadow=True)
+        ax.set_xlabel('Year', fontsize=self.label_fontsize, fontweight='bold')
+        ax.set_ylabel('Above-ground biomass (t/ha)', fontsize=self.label_fontsize, fontweight='bold')
+        ax.set_title('Biomass accumulation - all scenarios', fontsize=self.title_fontsize, fontweight='bold', pad=20)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, frameon=False, fontsize=self.legend_fontsize)
         ax.grid(True, alpha=0.3)
+        ax.tick_params(axis='both', which='major', labelsize=self.tick_fontsize)
         
         plt.tight_layout()
         return self._save_figure('biomass_all_scenarios')
@@ -166,13 +173,14 @@ class Plotter:
                 ax.fill_between(df['year'], 0, values, alpha=0.7, color=pool_color)
                 ax.plot(df['year'], values, color=pool_color, linewidth=2)
                 
-                ax.set_xlabel('Year', fontsize=10)
-                ax.set_ylabel('CO2e (t/ha)', fontsize=10)
-                ax.set_title(pool_names[pool], fontsize=11, fontweight='bold')
+                ax.set_xlabel('Year', fontsize=self.label_fontsize, fontweight='bold')
+                ax.set_ylabel('CO2e (t/ha)', fontsize=self.label_fontsize, fontweight='bold')
+                ax.set_title(pool_names[pool], fontsize=self.title_fontsize, fontweight='bold')
                 ax.grid(True, alpha=0.3)
+                ax.tick_params(axis='both', which='major', labelsize=self.tick_fontsize)
         
         plt.suptitle(f'Carbon pools breakdown - {self._format_label(scenario)}', 
-                    fontsize=14, fontweight='bold')
+                    fontsize=self.title_fontsize, fontweight='bold')
         plt.tight_layout()
         return self._save_figure(f'carbon_pools_breakdown_{scenario}')
     
@@ -208,13 +216,14 @@ class Plotter:
                   bottom=bottom, color=pool_color)
             bottom += data[pool]
         
-        ax.set_xlabel('Scenario', fontsize=12)
-        ax.set_ylabel('Carbon stock (t CO2e/ha)', fontsize=12)
-        ax.set_title('Final carbon pools comparison', fontsize=14, fontweight='bold')
+        ax.set_xlabel('Scenario', fontsize=self.label_fontsize, fontweight='bold')
+        ax.set_ylabel('Carbon stock (t CO2e/ha)', fontsize=self.label_fontsize, fontweight='bold')
+        ax.set_title('Final carbon pools comparison', fontsize=self.title_fontsize, fontweight='bold', pad=20)
         ax.set_xticks(x)
-        ax.set_xticklabels([self._format_label(s) for s in scenarios])
-        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=4, frameon=True, fancybox=True, shadow=True)
+        ax.set_xticklabels([self._format_label(s) for s in scenarios], fontsize=self.tick_fontsize)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=4, frameon=False, fontsize=self.legend_fontsize)
         ax.grid(True, alpha=0.3, axis='y')
+        ax.tick_params(axis='both', which='major', labelsize=self.tick_fontsize)
         
         plt.tight_layout()
         return self._save_figure('carbon_pools_comparison')
@@ -241,12 +250,13 @@ class Plotter:
               label='Costs', color=costs_color)
         ax.plot(cashflow_df['year'], cashflow_df['net_cashflow'], 
                color=net_color, linewidth=2, label='Net')
-        ax.set_xlabel('Year')
-        ax.set_ylabel('Cash Flow ($)')
-        ax.set_title('Annual cash flow')
-        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=3, frameon=True, fancybox=True, shadow=True)
+        ax.set_xlabel('Year', fontsize=self.label_fontsize, fontweight='bold')
+        ax.set_ylabel('Cash Flow ($)', fontsize=self.label_fontsize, fontweight='bold')
+        ax.set_title('Annual cash flow', fontsize=self.title_fontsize, fontweight='bold')
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, frameon=False, fontsize=self.legend_fontsize)
         ax.grid(True, alpha=0.3)
         ax.axhline(y=0, color='black', linewidth=0.5)
+        ax.tick_params(axis='both', which='major', labelsize=self.tick_fontsize)
         
         # Plot 2: Cumulative discounted cashflow
         ax = axes[0, 1]
@@ -255,34 +265,37 @@ class Plotter:
                linewidth=2, color=npv_color)
         ax.fill_between(cashflow_df['year'], 0, cashflow_df['cumulative_discounted'],
                        alpha=0.3, color=npv_color)
-        ax.set_xlabel('Year')
-        ax.set_ylabel('Cumulative NPV ($)')
-        ax.set_title('Cumulative discounted cash flow')
+        ax.set_xlabel('Year', fontsize=self.label_fontsize, fontweight='bold')
+        ax.set_ylabel('Cumulative NPV ($)', fontsize=self.label_fontsize, fontweight='bold')
+        ax.set_title('Cumulative discounted cash flow', fontsize=self.title_fontsize, fontweight='bold')
         ax.grid(True, alpha=0.3)
         ax.axhline(y=0, color='black', linewidth=0.5)
+        ax.tick_params(axis='both', which='major', labelsize=self.tick_fontsize)
         
         # Plot 3: Carbon price trajectory
         ax = axes[1, 0]
         price_color = color_manager.get_economic_color('carbon_price')
         ax.plot(cashflow_df['year'], cashflow_df['carbon_price'],
                linewidth=2, color=price_color)
-        ax.set_xlabel('Year')
-        ax.set_ylabel('Carbon price ($/tCO2e)')
-        ax.set_title('Carbon price trajectory')
+        ax.set_xlabel('Year', fontsize=self.label_fontsize, fontweight='bold')
+        ax.set_ylabel('Carbon price ($/tCO2e)', fontsize=self.label_fontsize, fontweight='bold')
+        ax.set_title('Carbon price trajectory', fontsize=self.title_fontsize, fontweight='bold')
         ax.grid(True, alpha=0.3)
+        ax.tick_params(axis='both', which='major', labelsize=self.tick_fontsize)
         
         # Plot 4: Credits generation
         ax = axes[1, 1]
         credits_color = color_manager.get_economic_color('revenue')  # Use revenue color for credits
         ax.bar(cashflow_df['year'], cashflow_df['credits_tCO2e'],
               alpha=0.7, color=credits_color)
-        ax.set_xlabel('Year')
-        ax.set_ylabel('Credits (tCO2e)')
-        ax.set_title('Carbon credits generation')
+        ax.set_xlabel('Year', fontsize=self.label_fontsize, fontweight='bold')
+        ax.set_ylabel('Credits (tCO2e)', fontsize=self.label_fontsize, fontweight='bold')
+        ax.set_title('Carbon credits generation', fontsize=self.title_fontsize, fontweight='bold')
         ax.grid(True, alpha=0.3)
+        ax.tick_params(axis='both', which='major', labelsize=self.tick_fontsize)
         
         plt.suptitle(f'Economic analysis - {self._format_label(scenario)}', 
-                    fontsize=14, fontweight='bold')
+                    fontsize=self.title_fontsize, fontweight='bold')
         plt.tight_layout()
         return self._save_figure(f'economics_{scenario}')
     
@@ -369,12 +382,12 @@ class Plotter:
                                **style)
         
         # Customize the plot
-        ax.set_xlabel('Year', fontsize=12, fontweight='bold')
-        ax.set_ylabel('Total carbon stock (t CO2e/ha)', fontsize=12, fontweight='bold')
-        ax.set_title('Total carbon stock - all scenarios', fontsize=14, fontweight='bold')
+        ax.set_xlabel('Year', fontsize=self.label_fontsize, fontweight='bold')
+        ax.set_ylabel('Total carbon stock (t CO2e/ha)', fontsize=self.label_fontsize, fontweight='bold')
+        ax.set_title('Total carbon stock - all scenarios', fontsize=self.title_fontsize, fontweight='bold', pad=20)
         
         # Add legend with better positioning
-        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=3, frameon=True, fancybox=True, shadow=True)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, frameon=False, fontsize=self.legend_fontsize)
         
         # Add grid
         ax.grid(True, alpha=0.3, linestyle='--')
@@ -387,6 +400,9 @@ class Plotter:
         ax.spines['right'].set_visible(False)
         ax.spines['left'].set_linewidth(1.2)
         ax.spines['bottom'].set_linewidth(1.2)
+        
+        # Set tick label sizes
+        ax.tick_params(axis='both', which='major', labelsize=self.tick_fontsize)
         
         # Set axis limits for better visualization
         # Don't force x-axis to start at 0 for calendar years
@@ -474,12 +490,12 @@ class Plotter:
                                label=label, **style)
         
         # Customize the plot
-        ax.set_xlabel('Year', fontsize=12, fontweight='bold')
-        ax.set_ylabel('Net carbon abatement (t CO2e/ha)', fontsize=12, fontweight='bold')
-        ax.set_title('Net carbon abatement - all scenarios (from baseline 0)', fontsize=14, fontweight='bold')
+        ax.set_xlabel('Year', fontsize=self.label_fontsize, fontweight='bold')
+        ax.set_ylabel('Net carbon abatement (t CO2e/ha)', fontsize=self.label_fontsize, fontweight='bold')
+        ax.set_title('Net carbon abatement - all scenarios (from baseline 0)', fontsize=self.title_fontsize, fontweight='bold', pad=20)
         
         # Add legend with better positioning
-        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=3, frameon=True, fancybox=True, shadow=True)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, frameon=False, fontsize=self.legend_fontsize)
         
         # Add grid
         ax.grid(True, alpha=0.3, linestyle='--')
@@ -492,6 +508,9 @@ class Plotter:
         ax.spines['right'].set_visible(False)
         ax.spines['left'].set_linewidth(1.2)
         ax.spines['bottom'].set_linewidth(1.2)
+        
+        # Set tick label sizes
+        ax.tick_params(axis='both', which='major', labelsize=self.tick_fontsize)
         
         # Set y-axis to start from 0 to show net abatement clearly
         ax.set_ylim(bottom=0)
@@ -542,13 +561,14 @@ class Plotter:
             # Add zero line for reference
             ax.axhline(y=0, color='black', linestyle='--', alpha=0.5, linewidth=1)
         
-        ax.set_xlabel('Year', fontsize=12, fontweight='bold')
-        ax.set_ylabel('Carbon (t CO₂e/ha)', fontsize=12, fontweight='bold')
+        ax.set_xlabel('Year', fontsize=self.label_fontsize, fontweight='bold')
+        ax.set_ylabel('Carbon (t CO₂e/ha)', fontsize=self.label_fontsize, fontweight='bold')
         ax.set_title('Reforestation Minus Baseline Losses\n(True Net Benefit of Reforestation)', 
-                    fontsize=14, fontweight='bold', pad=20)
+                    fontsize=self.title_fontsize, fontweight='bold', pad=20)
         
-        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=3, frameon=True, fancybox=True, shadow=True)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, frameon=False, fontsize=self.legend_fontsize)
         ax.grid(True, alpha=0.3)
+        ax.tick_params(axis='both', which='major', labelsize=self.tick_fontsize)
         
         # Formatting
         ax.spines['top'].set_visible(False)
@@ -605,13 +625,14 @@ class Plotter:
             # Add zero line for reference
             ax.axhline(y=0, color='black', linestyle='--', alpha=0.5, linewidth=1)
         
-        ax.set_xlabel('Year', fontsize=12, fontweight='bold')
-        ax.set_ylabel('Carbon (t CO₂e/ha)', fontsize=12, fontweight='bold')
+        ax.set_xlabel('Year', fontsize=self.label_fontsize, fontweight='bold')
+        ax.set_ylabel('Carbon (t CO₂e/ha)', fontsize=self.label_fontsize, fontweight='bold')
         ax.set_title('Management Benefits Minus Reforestation Gains\n(Managing Existing Forest Without Planting New Trees)', 
-                    fontsize=14, fontweight='bold', pad=20)
+                    fontsize=self.title_fontsize, fontweight='bold', pad=20)
         
-        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=3, frameon=True, fancybox=True, shadow=True)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, frameon=False, fontsize=self.legend_fontsize)
         ax.grid(True, alpha=0.3)
+        ax.tick_params(axis='both', which='major', labelsize=self.tick_fontsize)
         
         # Formatting
         ax.spines['top'].set_visible(False)
@@ -692,13 +713,13 @@ class Plotter:
                            **refor_style)
         
         # Customize the plot
-        ax.set_xlabel('Year', fontsize=12, fontweight='bold')
-        ax.set_ylabel('Carbon additionality (t CO2e/ha)', fontsize=12, fontweight='bold')
-        ax.set_title('Carbon Additionality', fontsize=14, fontweight='bold')
+        ax.set_xlabel('Year', fontsize=self.label_fontsize, fontweight='bold')
+        ax.set_ylabel('Carbon additionality (t CO2e/ha)', fontsize=self.label_fontsize, fontweight='bold')
+        ax.set_title('Carbon Additionality', fontsize=self.title_fontsize, fontweight='bold', pad=20)
         
         
         # Add legend with better positioning
-        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.1), ncol=3, frameon=True, fancybox=True, shadow=True)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, frameon=False, fontsize=self.legend_fontsize)
         
         # Add grid
         ax.grid(True, alpha=0.3, linestyle='--')
@@ -712,8 +733,281 @@ class Plotter:
         ax.spines['left'].set_linewidth(1.2)
         ax.spines['bottom'].set_linewidth(1.2)
         
+        # Set tick label sizes
+        ax.tick_params(axis='both', which='major', labelsize=self.tick_fontsize)
+        
         # Set axis limits for better visualization
         # Don't force x-axis to start at 0 for calendar years
         
         plt.tight_layout()
         return self._save_figure('additionality')
+    
+    def plot_combined_additionality_and_stocks(self, results: Dict[str, pd.DataFrame], 
+                                             forest_types: List[str]):
+        """
+        Create a combined plot showing carbon stocks as main chart with additionality as inset.
+        Main chart shows total carbon stocks, inset in bottom left shows additionality.
+        
+        Args:
+            results: Dictionary of results DataFrames
+            forest_types: List of forest types
+        """
+        fig, ax_main = plt.subplots(figsize=(12, 8))
+        
+        # Create inset axes in bottom right corner
+        from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+        ax_inset = inset_axes(ax_main, width="30%", height="25%", loc='lower right')
+        
+        for forest_type in forest_types:
+            if forest_type not in results:
+                continue
+                
+            df = results[forest_type]
+            
+            # Check data format and plot accordingly
+            if 'scenario' in df.columns:
+                # Calendar years format - plot by scenario
+                baseline_data = df[df['scenario'] == 'baseline']
+                management_data = df[df['scenario'] == 'management']
+                reforestation_data = df[df['scenario'] == 'reforestation']
+                
+                # Plot total carbon stocks on main chart
+                if not baseline_data.empty:
+                    baseline_sorted = baseline_data.sort_values('year')
+                    baseline_style = color_manager.get_scenario_style('baseline')
+                    baseline_style['linestyle'] = '--'
+                    baseline_style['alpha'] = 0.7
+                    ax_main.plot(baseline_sorted['calendar_year'], baseline_sorted['total_co2e'], 
+                            label='Baseline',
+                            **baseline_style)
+                
+                if not management_data.empty:
+                    management_sorted = management_data.sort_values('year')
+                    mgmt_style = color_manager.get_scenario_style('management')
+                    mgmt_style['linestyle'] = '-'
+                    ax_main.plot(management_sorted['calendar_year'], management_sorted['total_co2e'], 
+                            label='AFM',
+                            **mgmt_style)
+                
+                if not reforestation_data.empty:
+                    reforestation_sorted = reforestation_data.sort_values('year')
+                    refor_style = color_manager.get_scenario_style('reforestation')
+                    refor_style['linestyle'] = '-'
+                    ax_main.plot(reforestation_sorted['calendar_year'], reforestation_sorted['total_co2e'], 
+                            label='Reforestation',
+                            **refor_style)
+                
+                # Calculate and plot additionality on inset chart
+                if not baseline_data.empty and not management_data.empty:
+                    baseline_sorted = baseline_data.sort_values('year')
+                    management_sorted = management_data.sort_values('year')
+                    management_additionality = management_sorted['total_co2e'].values - baseline_sorted['total_co2e'].values
+                    mgmt_add_style = color_manager.get_scenario_style('management')
+                    mgmt_add_style['linestyle'] = '-'
+                    mgmt_add_style['linewidth'] = 2
+                    ax_inset.plot(management_sorted['calendar_year'], management_additionality, 
+                            **mgmt_add_style)
+                
+                if not reforestation_data.empty:
+                    reforestation_sorted = reforestation_data.sort_values('year')
+                    reforestation_additionality = reforestation_sorted['total_co2e'].values - 0
+                    refor_add_style = color_manager.get_scenario_style('reforestation')
+                    refor_add_style['linestyle'] = '-'
+                    refor_add_style['linewidth'] = 2
+                    ax_inset.plot(reforestation_sorted['calendar_year'], reforestation_additionality,
+                            **refor_add_style)
+            else:
+                # Regular format - plot by scenario columns
+                # Plot total carbon stocks on main chart
+                baseline_style = color_manager.get_scenario_style('baseline')
+                baseline_style['linestyle'] = '--'
+                baseline_style['alpha'] = 0.7
+                ax_main.plot(df['year'], df['baseline_co2e'], 
+                        label='Baseline',
+                        **baseline_style)
+                
+                mgmt_style = color_manager.get_scenario_style('management')
+                mgmt_style['linestyle'] = '-'
+                ax_main.plot(df['year'], df['management_co2e'], 
+                        label='AFM',
+                        **mgmt_style)
+                
+                refor_style = color_manager.get_scenario_style('reforestation')
+                refor_style['linestyle'] = '-'
+                ax_main.plot(df['year'], df['reforestation_co2e'], 
+                        label='Reforestation',
+                        **refor_style)
+                
+                # Calculate and plot additionality on inset chart
+                if 'management_co2e' in df.columns and 'baseline_co2e' in df.columns:
+                    management_additionality = df['management_co2e'] - df['baseline_co2e']
+                    mgmt_add_style = color_manager.get_scenario_style('management')
+                    mgmt_add_style['linestyle'] = '-'
+                    mgmt_add_style['linewidth'] = 2
+                    ax_inset.plot(df['year'], management_additionality, 
+                            **mgmt_add_style)
+                
+                if 'reforestation_co2e' in df.columns:
+                    reforestation_additionality = df['reforestation_co2e'] - 0
+                    refor_add_style = color_manager.get_scenario_style('reforestation')
+                    refor_add_style['linestyle'] = '-'
+                    refor_add_style['linewidth'] = 2
+                    ax_inset.plot(df['year'], reforestation_additionality,
+                            **refor_add_style)
+        
+        # Customize the main plot
+        ax_main.set_xlabel('Year', fontsize=28)
+        ax_main.set_ylabel('Total carbon stock (t CO2e/ha)', fontsize=28)
+        ax_main.set_title('Carbon stocks over time', fontsize=36, pad=20)
+        
+        # Add legend back to main chart with clean white background
+        legend = ax_main.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), 
+                               ncol=3, frameon=False, fontsize=20)
+        
+        # Remove grid from main chart for clean background
+        ax_main.grid(False)
+        
+        # Styling for main chart
+        ax_main.spines['top'].set_visible(False)
+        ax_main.spines['right'].set_visible(False)
+        ax_main.spines['left'].set_linewidth(1.2)
+        ax_main.spines['bottom'].set_linewidth(1.2)
+        
+        # Increase tick label sizes
+        ax_main.tick_params(axis='both', which='major', labelsize=24)
+        
+        # Customize the inset plot (additionality) - completely clean
+        ax_inset.set_title('Additionality', fontsize=24, pad=5)
+        ax_inset.grid(True, alpha=0.3, linestyle=':')
+        ax_inset.axhline(y=0, color='black', linewidth=0.5, alpha=0.6)
+        
+        # Remove all axis labels and numbering for clean look
+        ax_inset.set_xlabel('')
+        ax_inset.set_ylabel('')
+        ax_inset.set_xticks([])  # Remove x-axis ticks
+        ax_inset.set_yticks([])  # Remove y-axis ticks
+        ax_inset.tick_params(axis='both', which='both', length=0)  # Remove tick marks
+        
+        # Styling for inset - minimal
+        ax_inset.spines['top'].set_visible(False)
+        ax_inset.spines['right'].set_visible(False)
+        ax_inset.spines['left'].set_linewidth(0.8)
+        ax_inset.spines['bottom'].set_linewidth(0.8)
+        
+        plt.tight_layout()
+        return self._save_figure('combined_additionality_stocks')
+    
+    def plot_poster_stocks_only(self, results: Dict[str, pd.DataFrame], 
+                                forest_types: List[str]):
+        """
+        Create a poster-style plot showing only total carbon stocks over time
+        (no additionality inset).
+        """
+        fig, ax_main = plt.subplots(figsize=(12, 8))
+        
+        for forest_type in forest_types:
+            if forest_type not in results:
+                continue
+            
+            df = results[forest_type]
+            
+            # Plot by available format
+            if 'scenario' in df.columns:
+                baseline_data = df[df['scenario'] == 'baseline']
+                management_data = df[df['scenario'] == 'management']
+                reforestation_data = df[df['scenario'] == 'reforestation']
+                
+                if not baseline_data.empty:
+                    baseline_sorted = baseline_data.sort_values('year')
+                    baseline_style = color_manager.get_scenario_style('baseline')
+                    baseline_style['linestyle'] = '--'
+                    baseline_style['alpha'] = 0.7
+                    ax_main.plot(baseline_sorted['calendar_year'], baseline_sorted['total_co2e'], 
+                                 label='Baseline', **baseline_style)
+                
+                if not management_data.empty:
+                    management_sorted = management_data.sort_values('year')
+                    mgmt_style = color_manager.get_scenario_style('management')
+                    mgmt_style['linestyle'] = '-'
+                    ax_main.plot(management_sorted['calendar_year'], management_sorted['total_co2e'], 
+                                 label='AFM', **mgmt_style)
+                
+                if not reforestation_data.empty:
+                    reforestation_sorted = reforestation_data.sort_values('year')
+                    refor_style = color_manager.get_scenario_style('reforestation')
+                    refor_style['linestyle'] = '-'
+                    ax_main.plot(reforestation_sorted['calendar_year'], reforestation_sorted['total_co2e'], 
+                                 label='Reforestation', **refor_style)
+            else:
+                baseline_style = color_manager.get_scenario_style('baseline')
+                baseline_style['linestyle'] = '--'
+                baseline_style['alpha'] = 0.7
+                ax_main.plot(df['year'], df['baseline_co2e'], label='Baseline', **baseline_style)
+                
+                mgmt_style = color_manager.get_scenario_style('management')
+                mgmt_style['linestyle'] = '-'
+                ax_main.plot(df['year'], df['management_co2e'], label='AFM', **mgmt_style)
+                
+                refor_style = color_manager.get_scenario_style('reforestation')
+                refor_style['linestyle'] = '-'
+                ax_main.plot(df['year'], df['reforestation_co2e'], label='Reforestation', **refor_style)
+        
+        # Main chart styling (poster-like)
+        ax_main.set_xlabel('Year', fontsize=28)
+        ax_main.set_ylabel('Total carbon stock (t CO2e/ha)', fontsize=28)
+        ax_main.set_title('Carbon stocks over time', fontsize=36, pad=20)
+        ax_main.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), 
+                       ncol=3, frameon=False, fontsize=20)
+        ax_main.grid(False)
+        ax_main.spines['top'].set_visible(False)
+        ax_main.spines['right'].set_visible(False)
+        ax_main.spines['left'].set_linewidth(1.2)
+        ax_main.spines['bottom'].set_linewidth(1.2)
+        ax_main.tick_params(axis='both', which='major', labelsize=24)
+        
+        plt.tight_layout()
+        return self._save_figure('poster_stocks_only')
+
+    def _create_legend_file(self):
+        """Create a separate legend file for the combined plot."""
+        fig, ax = plt.subplots(figsize=(8, 2))
+        
+        # Create dummy lines with the same styles as the main plot
+        baseline_style = color_manager.get_scenario_style('baseline')
+        baseline_style['linestyle'] = '--'
+        baseline_style['alpha'] = 0.7
+        
+        mgmt_style = color_manager.get_scenario_style('management')
+        mgmt_style['linestyle'] = '-'
+        
+        refor_style = color_manager.get_scenario_style('reforestation')
+        refor_style['linestyle'] = '-'
+        
+        # Create dummy data points for the legend
+        x_dummy = [0, 1]
+        ax.plot(x_dummy, [0, 0], label='Baseline', **baseline_style)
+        ax.plot(x_dummy, [0, 0], label='AFM', **mgmt_style)
+        ax.plot(x_dummy, [0, 0], label='Reforestation', **refor_style)
+        
+        # Hide the plot area, just show legend
+        ax.set_xlim(0, 1)
+        ax.set_ylim(0, 1)
+        ax.axis('off')
+        
+        # Create legend with clean white background, no box or shading
+        legend = ax.legend(loc='center', ncol=3, frameon=False, fontsize=24)
+        
+        # Remove all padding and margins
+        plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
+        plt.margins(0)
+        
+        # Save legend file
+        legend_files = {}
+        for fmt in ['png']:  # Only PNG for legend
+            filename = f'legend_combined_additionality_stocks.{fmt}'
+            filepath = self.plots_dir / filename
+            plt.savefig(filepath, dpi=self.dpi, bbox_inches='tight', pad_inches=0)
+            legend_files[fmt] = filepath
+        
+        plt.close(fig)
+        return legend_files

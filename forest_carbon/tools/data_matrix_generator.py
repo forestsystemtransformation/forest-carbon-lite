@@ -608,8 +608,8 @@ def main():
     parser.add_argument('--list', action='store_true', 
                        help='List available scenarios and data types')
     
-    parser.add_argument('--scenarios', nargs='+',
-                       help='List of scenarios to compare')
+    parser.add_argument('--scenarios', type=str,
+                       help='Comma-separated list of scenarios to compare')
     
     parser.add_argument('--matrix-type', choices=['carbon_stocks', 'additionality', 'economics', 'combined'], 
                        default='carbon_stocks',
@@ -643,8 +643,11 @@ def main():
         print("Use --list to see available scenarios")
         return
     
+    # Split comma-separated scenarios
+    scenarios = [s.strip() for s in args.scenarios.split(',')]
+    
     # Validate scenarios
-    invalid_scenarios = [s for s in args.scenarios if s not in generator.available_scenarios]
+    invalid_scenarios = [s for s in scenarios if s not in generator.available_scenarios]
     if invalid_scenarios:
         print(f"Error: Invalid scenarios: {invalid_scenarios}")
         print("Available scenarios:")
@@ -655,16 +658,16 @@ def main():
     # Generate matrix based on type
     try:
         if args.matrix_type == 'carbon_stocks':
-            generator.create_carbon_stocks_matrix(args.scenarios, max_scenarios_per_row=args.max_per_row,
+            generator.create_carbon_stocks_matrix(scenarios, max_scenarios_per_row=args.max_per_row,
                                                 grid_rows=args.grid_rows, grid_cols=args.grid_cols)
         elif args.matrix_type == 'additionality':
-            generator.create_additionality_matrix(args.scenarios, max_scenarios_per_row=args.max_per_row,
+            generator.create_additionality_matrix(scenarios, max_scenarios_per_row=args.max_per_row,
                                                 grid_rows=args.grid_rows, grid_cols=args.grid_cols)
         elif args.matrix_type == 'economics':
-            generator.create_economics_matrix(args.scenarios, max_scenarios_per_row=args.max_per_row,
+            generator.create_economics_matrix(scenarios, max_scenarios_per_row=args.max_per_row,
                                             grid_rows=args.grid_rows, grid_cols=args.grid_cols)
         elif args.matrix_type == 'combined':
-            generator.create_combined_matrix(args.scenarios, figsize=(24, 18), 
+            generator.create_combined_matrix(scenarios, figsize=(24, 18), 
                                            max_scenarios_per_row=args.max_per_row,
                                            grid_rows=args.grid_rows, grid_cols=args.grid_cols)
     except Exception as e:

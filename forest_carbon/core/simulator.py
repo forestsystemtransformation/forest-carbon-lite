@@ -948,6 +948,8 @@ class ForestCarbonSimulator:
         plotter.plot_reforestation_minus_losses(plot_results, [self.forest_type])  # Reforestation minus losses
         plotter.plot_management_minus_reforestation(plot_results, [self.forest_type])  # Management minus reforestation
         plotter.plot_project_level_additionality(plot_results, [self.forest_type])  # Now saves as additionality.png
+        # Poster plot without additionality inset
+        plotter.plot_poster_stocks_only(plot_results, [self.forest_type])
         
         # Plot carbon pools for each scenario
         for scenario in ['baseline', 'management', 'reforestation']:
