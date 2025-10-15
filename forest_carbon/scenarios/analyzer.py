@@ -73,19 +73,19 @@ class ScenarioAnalyzer:
 
         # 1. Climate Impact on Carbon Stocks
         ax1 = plt.subplot(3, 3, 1)
-        self._plot_climate_impact(successful, ax1)
+        self._plot_climate_impact_comprehensive(successful, ax1)
 
         # 2. Management Effectiveness
         ax2 = plt.subplot(3, 3, 2)
-        self._plot_management_effectiveness(successful, ax2)
+        self._plot_management_effectiveness_comprehensive(successful, ax2)
 
         # 3. Forest Type Comparison
         ax3 = plt.subplot(3, 3, 3)
-        self._plot_forest_type_comparison(successful, ax3)
+        self._plot_forest_type_comparison_comprehensive(successful, ax3)
 
         # 4. Economic Performance Heatmap
         ax4 = plt.subplot(3, 3, 4)
-        self._plot_economic_heatmap(successful, ax4)
+        self._plot_economic_heatmap_comprehensive(successful, ax4)
 
         # 5. Additionality Analysis
         ax5 = plt.subplot(3, 3, 5)
@@ -510,6 +510,82 @@ This report analyzes {len(data)} forest carbon scenarios across different forest
         self._plot_summary_statistics_individual(data, individual_dir / "12_summary_statistics.png")
         
         print("✅ Individual plots generated")
+    
+    def _plot_climate_impact_comprehensive(self, data: pd.DataFrame, ax):
+        """Plot climate impact on carbon stocks for comprehensive analysis."""
+        pivot = data.pivot_table(
+            values='management_final_co2e',
+            index='climate',
+            columns='forest_type',
+            aggfunc='mean'
+        )
+        
+        pivot.plot(kind='bar', ax=ax, width=0.8)
+        ax.set_title('Climate Impact on Final Carbon Stock', fontweight='bold')
+        ax.set_ylabel('CO2e (t/ha)')
+        ax.set_xlabel('Climate Scenario')
+        ax.legend(title='Forest Type', bbox_to_anchor=(1.05, 1), loc='upper left')
+        ax.tick_params(axis='x', rotation=45)
+        ax.grid(True, alpha=0.3)
+    
+    def _plot_management_effectiveness_comprehensive(self, data: pd.DataFrame, ax):
+        """Plot management effectiveness for comprehensive analysis."""
+        data['abatement'] = data['management_final_co2e'] - data['baseline_final_co2e']
+        
+        pivot = data.pivot_table(
+            values='abatement',
+            index='management',
+            columns='forest_type',
+            aggfunc='mean'
+        )
+        
+        pivot.plot(kind='bar', ax=ax, width=0.8)
+        ax.set_title('Management Effectiveness (Carbon Abatement)', fontweight='bold')
+        ax.set_ylabel('Additional CO2e (t/ha)')
+        ax.set_xlabel('Management Level')
+        ax.legend(title='Forest Type', bbox_to_anchor=(1.05, 1), loc='upper left')
+        ax.tick_params(axis='x', rotation=45)
+        ax.grid(True, alpha=0.3)
+    
+    def _plot_forest_type_comparison_comprehensive(self, data: pd.DataFrame, ax):
+        """Plot forest type comparison for comprehensive analysis."""
+        forest_summary = data.groupby('forest_type').agg({
+            'management_final_co2e': 'mean',
+            'management_npv': 'mean',
+            'management_additionality': 'mean'
+        }).reset_index()
+        
+        x = range(len(forest_summary))
+        width = 0.25
+        
+        ax.bar([i - width for i in x], forest_summary['management_final_co2e'], 
+               width, label='Final CO2e', alpha=0.8)
+        ax.bar(x, forest_summary['management_npv'] / 1000, 
+               width, label='NPV (k$)', alpha=0.8)
+        ax.bar([i + width for i in x], forest_summary['management_additionality'], 
+               width, label='Additionality', alpha=0.8)
+        
+        ax.set_title('Forest Type Performance Comparison', fontweight='bold')
+        ax.set_ylabel('Value')
+        ax.set_xlabel('Forest Type')
+        ax.set_xticks(x)
+        ax.set_xticklabels(forest_summary['forest_type'])
+        ax.legend()
+        ax.grid(True, alpha=0.3)
+    
+    def _plot_economic_heatmap_comprehensive(self, data: pd.DataFrame, ax):
+        """Plot economic performance heatmap for comprehensive analysis."""
+        pivot = data.pivot_table(
+            values='management_npv',
+            index='management',
+            columns='climate',
+            aggfunc='mean'
+        )
+        
+        sns.heatmap(pivot, annot=True, fmt='.0f', ax=ax, cmap='RdYlGn', center=0)
+        ax.set_title('NPV by Management and Climate', fontweight='bold')
+        ax.set_xlabel('Climate Scenario')
+        ax.set_ylabel('Management Level')
     
     def _plot_climate_impact(self, data: pd.DataFrame, output_path: Path):
         """Plot climate impact on carbon stocks."""
