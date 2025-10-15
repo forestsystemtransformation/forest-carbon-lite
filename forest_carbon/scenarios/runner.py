@@ -138,10 +138,10 @@ class BatchRunner:
                     baseline_result.get('final_co2e_stock', 0)
                 )
             
-            if management_result is not None and reforestation_result is not None:
+            if reforestation_result is not None:
+                # Reforestation additionality = Reforestation - 0 (bare ground)
                 result_summary['reforestation_additionality'] = (
-                    reforestation_result.get('final_co2e_stock', 0) - 
-                    baseline_result.get('final_co2e_stock', 0) if baseline_result is not None else 0
+                    reforestation_result.get('final_co2e_stock', 0) - 0
                 )
             
             return result_summary
