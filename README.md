@@ -14,7 +14,7 @@ The Forest Carbon Lite Simulator (FCL v0.1) presents an open-source, scientifica
 
 **Forest Carbon Lite v0.1 is a Professional Review Draft**
 
-This implementation uses validated components (FullCAM TYF validated against 9,300+ plots by Forrester et al., 2025) but **the integrated system lacks independent field validation**.
+This implementation uses validated components (FullCAM TYF) but **the integrated system lacks independent field validation**.
 
 ### ✅ **Appropriate Use Cases:**
 - Preliminary site screening and prioritization
